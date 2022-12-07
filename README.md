@@ -1,7 +1,7 @@
-# Simulateur_de_marche
+# Simulateur_de_marche/n
 
 
 
-#environnement physique : Samir
-#construction physique de l'animal : Tiago 
-#algorithme genetique : Jean-Nicolas
+#environnement physique : Samir/n
+#construction physique de l'animal : Tiago/n
+#algorithme genetique : Jean-Nicolas/n
