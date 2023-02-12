@@ -5,7 +5,7 @@ import sys
 
 
 if __name__ == "__main__":
-    model = Model.Model(4, 100, 200, 100, 1000)
+    model = Model.Model(4, 100, 200, 100)
     """Animal.Cow(4, 100, 150, 332.75, 200, 100)"""
     display = DisplayModel.Display(model)
     sys.exit(display.show())

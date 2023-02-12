@@ -17,19 +17,28 @@ class Model:
         self.environment.addAnimal(self.animal)
         self.legBodies = self.animal.getLegBodies()
         for i in range(len(self.legBodies)):
-            for j in range(len(self.legBodies[0])):
-                print("leg " + str(i) + "." + str(j) + " : " + str(self.legBodies[i][j].position.x) + ", " + str(self.legBodies[i][j].position.y))
+            for j in range(0,len(self.legBodies[0]),2):
+                print("leg ")
+                print(str(i) + "." + str(j) + " : " + str(self.legBodies[i][j].position.x) + ", " + str(self.legBodies[i][j].position.y))
+                print(str(i) + "." + str(j+1) + " : " + str(self.legBodies[i][j+1].position.x) + ", " + str(self.legBodies[i][j+1].position.y))
 
     def getSpace(self):
         return self.space
 
-    def moves(self):
-        """for body in self.legBodies:
-            for i in range(len(body)):
-                if i % 2 == 0:"""        
-        self.legBodies[0][0].apply_force_at_world_point((0, -40), (0, 0))
-        self.legBodies[1][0].apply_force_at_world_point((10, -40), (0, 0))
-        self.legBodies[0][2].apply_force_at_world_point((0, -305), (0, 0))
-        self.legBodies[1][2].apply_force_at_world_point((0, -305), (0, 0))
+    def moves(self, i, j):
+   
+        """self.legBodies[0][0].apply_impulse_at_world_point((0, 1), (0, 0))
+        self.legBodies[1][0].apply_impulse_at_world_point((0, 1), (0, 0))
+        self.legBodies[0][2].apply_impulse_at_world_point((0, -6), (0, 0))
+        self.legBodies[1][2].apply_impulse_at_world_point((0, -6), (0, 0))"""
+        weight = self.animal.getWeight()
+        x, y = 50, -400
+        if j+1 % 2 != 0:
+            y = y - 5
+        
+        self.legBodies[i][j].apply_impulse_at_world_point((x, y), (0, 25))
+        #self.legBodies[i][j+1].apply_impulse_at_world_point((x, y), (0, 25))
+        
+
 
     

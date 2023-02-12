@@ -34,7 +34,7 @@ class Animal:
     def getFootNumber(self):
         return self.footNumber
     
-    def getPoids(self):
+    def getWeight(self):
         return self.weight
 
     def getScore(self):
@@ -67,6 +67,11 @@ class Animal:
     def getFootsPositions(self):
         pass
 
+    """@abstractmethod
+    def updatePositions(self):
+        pass"""
+
+
 
 class Autruche(Animal):
     def makeBodyAndShape(self):
@@ -86,6 +91,18 @@ class Cow(Animal):
         self.headBody = None
         self.topBody = None
 
+    """def updatePositions(self):
+        positions_leg = self.__getLegsPositions()
+        positions_foot = self.__getFootsPositions()
+
+        for leg in self.legBodies:
+            for i in range(4):
+                leg[i].position = positions_leg[i]
+
+        for foot in self.footBodies:
+            for i in range(2):
+                foot[i].position = positions_foot[i]"""
+
     def makeBodyAndShape(self):
         self.__makeBodies()
         self.__makeshapes()
@@ -97,10 +114,14 @@ class Cow(Animal):
         positions_leg = self.__getLegsPositions()
         positions_foot = self.__getFootsPositions()
 
-        self.headBody = pymunk.Body(self.weight * 0.4, pymunk.moment_for_box(self.weight * 0.4, (self.w_body, self.h_body)))
+        self.headBody = pymunk.Body(self.head_weight, pymunk.moment_for_box(self.head_weight, (self.w_body, self.h_body)))
         self.headBody.position = (self.x_cow+(self.w_body*0.5), self.y_cow-(self.h_body*0.5))
-        self.topBody = pymunk.Body(self.head_weight, pymunk.moment_for_box(self.head_weight, (self.w_body*0.3, self.h_body*0.5)))
+        self.topBody = pymunk.Body(self.weight * 0.4, pymunk.moment_for_box(self.weight * 0.4, (self.w_body*0.3, self.h_body*0.5)))
         self.topBody.position = (self.x_cow, self.y_cow)
+
+        self.BackLeg_x = (self.x_cow - (self.w_body / 2)) + ((self.w_body * 0.1) + (self.w_leg / 2))
+        self.upperLeg_y = (self.y_cow + (self.h_body / 2)) + self.h_leg / 2
+        self.FrontLeg_x = (self.x_cow + (self.w_body / 2)) - ((self.w_body * 0.1) + (self.w_leg / 2))
 
         for i in range(2): #making leg
             leg = []
@@ -154,6 +175,7 @@ class Cow(Animal):
         # backlegs
         for i in range(2):
             joint1 = pymunk.PinJoint(self.legBodies[i][0], self.topBody, (0, -cowPawJoint_y), (-cowBodyJoint_x, cowBodyJoint_y))
+            DampedRotarySpring(arm.body, arm2.body, 0, 10000000, 10000)
             rljoint1 = pymunk.constraints.RotaryLimitJoint(self.legBodies[i][0], self.topBody, mini, maxi)
 
             joint2 = pymunk.PinJoint(self.legBodies[i][0], self.legBodies[i][1], (0, cowPawJoint_y), (0, -cowPawJoint_y))
