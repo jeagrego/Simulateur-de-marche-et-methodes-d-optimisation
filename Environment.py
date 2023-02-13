@@ -28,13 +28,16 @@ class Environment:
         return True
 
     def addAnimal(self, animal):
-        bodiesAndShapes, joints, rljoints = animal.makeBodyAndShape()
+        bodiesAndShapes, joints, rljoints, smjoints = animal.makeBodyAndShape()
 
         for body, shape in bodiesAndShapes:
             shape.collision_type = 1
             self.space.add(body, shape)
 
-        for i in range(len(joints)):
-            self.space.add(joints[i])
-        for i in range(len(rljoints)):
-            self.space.add(rljoints[i])
+        for joint in joints:
+            self.space.add(joint)
+        for rljoint in rljoints:
+            self.space.add(rljoint)
+
+        for smjoint in smjoints:
+            self.space.add(smjoint)

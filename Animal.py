@@ -20,6 +20,7 @@ class Animal:
         self.bodiesAndShapes = []
         self.joints = []
         self.rljoints = []  # rotation limit
+        self.smjoints = []
 
         self.w_leg = w_body * 0.15
         self.h_leg = h_body * 0.55
@@ -42,6 +43,9 @@ class Animal:
 
     def getLegBodies(self):
         return self.legBodies
+
+    def getSmjoints(self):
+        return self.smjoints
         
     @abstractmethod
     def makeBodyAndShape(self):
@@ -107,7 +111,7 @@ class Cow(Animal):
         self.__makeBodies()
         self.__makeshapes()
         self.__makeJoints()
-        return self.bodiesAndShapes, self.joints, self.rljoints
+        return self.bodiesAndShapes, self.joints, self.rljoints, self.smjoints
 
     
     def __makeBodies(self):
@@ -157,6 +161,7 @@ class Cow(Animal):
         for foot in self.footBodies:
             for body in foot:
                 footShape = pymunk.Poly.create_box(body, (self.w_hoof, self.h_hoof))
+                footShape.friction = 0.5
                 self.bodiesAndShapes.append((body, footShape))
     
     def __makeJoints(self):
@@ -166,6 +171,7 @@ class Cow(Animal):
         cowPawJoint_x = self.w_leg * 0.5
         cowHoofJoint_y = self.h_hoof / 2
         mini = 0
+        mini_topBody = -1
         mini_hoof = -1
         maxi = 1
         topAndHead = pymunk.PinJoint(self.topBody, self.headBody, (self.w_body*0.5, - self.h_body*0.5), (0, 0))
@@ -175,12 +181,16 @@ class Cow(Animal):
         # backlegs
         for i in range(2):
             joint1 = pymunk.PinJoint(self.legBodies[i][0], self.topBody, (0, -cowPawJoint_y), (-cowBodyJoint_x, cowBodyJoint_y))
-            DampedRotarySpring(arm.body, arm2.body, 0, 10000000, 10000)
-            rljoint1 = pymunk.constraints.RotaryLimitJoint(self.legBodies[i][0], self.topBody, mini, maxi)
+            smjoint1 = pymunk.constraints.SimpleMotor(self.legBodies[i][0], self.topBody, 0)
+            smjoint1.max_force = 10000000
+            rljoint1 = pymunk.constraints.RotaryLimitJoint(self.legBodies[i][0], self.topBody, mini_topBody, maxi)
 
             joint2 = pymunk.PinJoint(self.legBodies[i][0], self.legBodies[i][1], (0, cowPawJoint_y), (0, -cowPawJoint_y))
+            smjoint2 = pymunk.constraints.SimpleMotor(self.legBodies[i][0], self.legBodies[i][1], 0)
+            smjoint2.max_force = 10000000
             rljoint2 = pymunk.constraints.RotaryLimitJoint(self.legBodies[i][0], self.legBodies[i][1], mini, maxi)
 
+            #changer les rotarylimitjoin pour les pieds
             joint3 = pymunk.PinJoint(self.legBodies[i][1], self.footBodies[i][0], (-cowPawJoint_x, cowPawJoint_y),(-cowPawJoint_x, -cowHoofJoint_y))
             rljoint3 = pymunk.constraints.RotaryLimitJoint(self.legBodies[i][1], self.footBodies[i][0], mini_hoof, maxi)
 
@@ -188,14 +198,19 @@ class Cow(Animal):
             rljoint4 = pymunk.constraints.RotaryLimitJoint(self.legBodies[i][1], self.footBodies[i][0], mini_hoof, maxi)
 
             self.joints.extend((joint1, joint2, joint3, joint4))
+            self.smjoints.extend((smjoint1, smjoint2))
             self.rljoints.extend((rljoint1, rljoint2, rljoint3, rljoint4))
 
         # hindlegs
         for i in range(2):
             joint1 = pymunk.PinJoint(self.legBodies[i][2], self.topBody, (0, -cowPawJoint_y), (cowBodyJoint_x, cowBodyJoint_y))
-            rljoint1 = pymunk.constraints.RotaryLimitJoint(self.legBodies[i][2], self.topBody, mini, maxi)
+            smjoint1 = pymunk.constraints.SimpleMotor(self.legBodies[i][2], self.topBody, 0)
+            smjoint1.max_force = 10000000
+            rljoint1 = pymunk.constraints.RotaryLimitJoint(self.legBodies[i][2], self.topBody, mini_topBody, maxi)
 
             joint2 = pymunk.PinJoint(self.legBodies[i][2], self.legBodies[i][3], (0, cowPawJoint_y), (0, -cowPawJoint_y))
+            smjoint2 = pymunk.constraints.SimpleMotor(self.legBodies[i][2], self.legBodies[i][3], 0)
+            smjoint2.max_force = 10000000
             rljoint2 = pymunk.constraints.RotaryLimitJoint(self.legBodies[i][2], self.legBodies[i][3], mini, maxi)
 
             joint3 = pymunk.PinJoint(self.legBodies[i][3], self.footBodies[i][1], (-cowPawJoint_x, cowPawJoint_y),(-cowPawJoint_x, -cowHoofJoint_y))
@@ -205,6 +220,7 @@ class Cow(Animal):
             rljoint4 = pymunk.constraints.RotaryLimitJoint(self.legBodies[i][3], self.footBodies[i][1], mini_hoof, maxi)
 
             self.joints.extend((joint1, joint2, joint3, joint4))
+            self.smjoints.extend((smjoint1, smjoint2))
             self.rljoints.extend((rljoint1, rljoint2, rljoint3, rljoint4))
 
     
