@@ -4,6 +4,7 @@ from abc import abstractmethod
 class Animal:
     
     def __init__(self, footNumber, weight, w_body, h_body, x_cow=150, y_cow=332.75):
+        self.matrix = None
         self.footNumber = footNumber
         self.weight = weight
         self.score = 0
@@ -46,6 +47,12 @@ class Animal:
 
     def getSmjoints(self):
         return self.smjoints
+    
+    def getMatrix(self):
+        return self.matrice
+    
+    def setMatrix(self, matrice):
+        self.matrice = matrice
         
     @abstractmethod
     def makeBodyAndShape(self):

@@ -27,7 +27,7 @@ class Display:
         direction = 1
         draw_options = pymunk.pygame_util.DrawOptions(self.screen)
         contractMusclesRight = pygame.USEREVENT + 1
-        timeToMove = 1000
+        timeToMove = 500
         pygame.time.set_timer(contractMusclesRight, timeToMove, 100)
         while self.running:
             if i == 2:
