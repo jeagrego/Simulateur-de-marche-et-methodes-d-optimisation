@@ -22,13 +22,12 @@ class Animal:
         self.joints = []
         self.rljoints = []  # rotation limit
         self.smjoints = []
+        self.topBody = None
 
         self.w_leg = w_body * 0.15
         self.h_leg = h_body * 0.55
         self.w_hoof = w_body * 0.25
         self.h_hoof = h_body * 0.10
-
-
 
     def setScore(self, score):
         self.score = score
@@ -100,7 +99,10 @@ class Cow(Animal):
         self.upperLeg_y = (self.y_cow + (self.h_body / 2)) + self.h_leg / 2
         self.FrontLeg_x = (self.x_cow + (self.w_body / 2)) - ((self.w_body * 0.1) + (self.w_leg / 2))
         self.headBody = None
-        self.topBody = None
+        
+
+    def getTopBody(self):
+        return self.topBody
 
     """def updatePositions(self):
         positions_leg = self.__getLegsPositions()
@@ -115,15 +117,15 @@ class Cow(Animal):
                 foot[i].position = positions_foot[i]"""
 
     def makeBodyAndShape(self):
-        self.__makeBodies()
-        self.__makeshapes()
-        self.__makeJoints()
+        self.makeBodies()
+        self.makeshapes()
+        self.makeJoints()
         return self.bodiesAndShapes, self.joints, self.rljoints, self.smjoints
 
     
-    def __makeBodies(self):
-        positions_leg = self.__getLegsPositions()
-        positions_foot = self.__getFootsPositions()
+    def makeBodies(self):
+        positions_leg = self.getLegsPositions()
+        positions_foot = self.getFootsPositions()
 
         self.headBody = pymunk.Body(self.head_weight, pymunk.moment_for_box(self.head_weight, (self.w_body, self.h_body)))
         self.headBody.position = (self.x_cow+(self.w_body*0.5), self.y_cow-(self.h_body*0.5))
@@ -155,7 +157,7 @@ class Cow(Animal):
                 foot[i].position = positions_foot[i]
 
    
-    def __makeshapes(self):
+    def makeshapes(self):
         
         self.bodiesAndShapes.append((self.topBody, pymunk.Poly.create_box(self.topBody, (self.w_body, self.h_body))))
         self.bodiesAndShapes.append((self.headBody, pymunk.Poly.create_box(self.headBody, (self.w_body*0.3, self.h_body*0.5))))
@@ -171,7 +173,7 @@ class Cow(Animal):
                 footShape.friction = 0.5
                 self.bodiesAndShapes.append((body, footShape))
     
-    def __makeJoints(self):
+    def makeJoints(self):
         cowBodyJoint_x = (self.w_body * 0.5) - ((self.w_body * 0.1) + (self.w_leg * 0.5))
         cowBodyJoint_y = self.h_body * 0.5
         cowPawJoint_y = self.h_leg * 0.5
@@ -231,10 +233,10 @@ class Cow(Animal):
             self.rljoints.extend((rljoint1, rljoint2, rljoint3, rljoint4))
 
     
-    def __getLegsPositions(self):
+    def getLegsPositions(self):
         return [(self.BackLeg_x, self.upperLeg_y), (self.BackLeg_x, self.upperLeg_y + self.h_leg), 
                 (self.FrontLeg_x, self.upperLeg_y),(self.FrontLeg_x, self.upperLeg_y + self.h_leg)]
     
-    def __getFootsPositions(self):
+    def getFootsPositions(self):
         return [(self.BackLeg_x, self.upperLeg_y + (self.h_leg * (3 / 2)) + (self.h_hoof * 0.5)),
                 (self.FrontLeg_x, self.upperLeg_y + (self.h_leg * (3 / 2)) + (self.h_hoof * 0.5))]

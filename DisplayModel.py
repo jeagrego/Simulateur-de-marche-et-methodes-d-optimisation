@@ -3,6 +3,7 @@ import pygame
 import sys
 import pymunk.pygame_util
 import Environment
+import time
 
 width, height = 1200, 700
 
@@ -29,6 +30,11 @@ class Display:
         contractMusclesRight = pygame.USEREVENT + 1
         timeToMove = 500
         pygame.time.set_timer(contractMusclesRight, timeToMove, 100)
+        new_population = self.model.getNewPopulation()
+        animal = new_population[0]
+        print(type(animal))
+        matrix = new_population[0].getMatrix()
+        start_time = time.time()
         while self.running:
             if i == 2:
                 direction = 2
@@ -51,12 +57,15 @@ class Display:
                     print("time to move")
                     """if  i % 4 == 0:
                         self.model.moves(i, direction)"""
-                    if i <= 2:
-                        self.model.moves(0, direction)
-                    elif i >= 4:
-                        self.model.moves(4, direction)
-                    i += 2
-            
+                    if self.model.isMoving(start_time, animal.getTopBody()):
+                        if i <= 2:
+                            self.model.moves(0, direction, animal)
+                        elif i >= 4:
+                            self.model.moves(4, direction, animal)
+                        i += 2
+                    else:
+                        print("You are to fat, go to the gym")
+        
             self.screen.fill(pygame.Color("white"))
             self.space.debug_draw(draw_options)
             # Info and flip screen
