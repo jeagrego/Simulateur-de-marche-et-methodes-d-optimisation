@@ -19,29 +19,41 @@ class Model:
         self.h_body = h_body
         self.x_animal = x_animal
         self.y_animal = y_animal
+        self.x_previous_body = x_animal
+        self.y_previous_body = y_animal
         self.mutation_prob = mutation_prob
+
         if footNumber == 4:
             self.initPopulation()
-            #self.animal = Cow(self.footnumber, self.weight, self.w_body, self.h_body, self.x_animal, self.y_animal)
+    
         elif footNumber == 2:
             print("unavailable")
+
         else:
-            raise Exception("Error : wrong footnumber")
-        """self.legBodies = self.animal.getLegBodies()
-        for i in range(len(self.legBodies)):
-            for j in range(0,len(self.legBodies[0]),2):
-                print("leg ")
-                print(str(i) + "." + str(j) + " : " + str(self.legBodies[i][j].position.x) + ", " + str(self.legBodies[i][j].position.y))
-                print(str(i) + "." + str(j+1) + " : " + str(self.legBodies[i][j+1].position.x) + ", " + str(self.legBodies[i][j+1].position.y))"""
+            raise Exception("Error : wrong foot numbers")
 
     def getSpace(self):
         return self.space
 
+    def getPosition(self):
+        return (self.x_animal, self.y_animal)
+
+    def setAnimal(self, animal):
+        for body in self.space.bodies:
+            self.space.remove(body)
+        for shape in self.space.shapes:
+            self.space.remove(shape)
+        for constraint in self.space.constraints:
+            self.space.remove(constraint)
+        self.environment.setGround()
+        self.environment.addAnimal(animal)
+
     def getPopulation(self):
         return self.population
 
-    def addToPopulation(self, animal):
-        self.population.append(animal)
+    def addToPopulation(self, new_population):
+        self.population.extend(new_population)
+        #print(self.population)
     
     def deleteAnimal(self, animal):
         self.population.remove(animal)
@@ -52,23 +64,29 @@ class Model:
         for i in range(len(new_population)):
             animal = self.makeAnimal()
             animal.setMatrix(new_population[i])
-            self.environment.addAnimal(animal)
             new_population_1.append(animal)
         return new_population_1
 
     def isMoving(self, start_time, topBody):
         current_time = time.time()
-        #topBody = animal.getTopBody()
-        print(type(topBody))
         diff_time = current_time - start_time 
-        diff_x = self.x_animal - topBody.position[0]
+        diff_x = self.x_previous_body - topBody.position[0]
 
-        if diff_x < 30 and diff_x < 5:
-            return True
-        return False
+        if abs(diff_x) < 20 and diff_time > 5:
+            return False
+        self.x_previous_body = topBody.position[0]
+        #print(diff_time, diff_x)
+        return True
+
+    def isFalling(self, headBody):
+        diff_y = self.y_previous_body - headBody.position[1]
+        if  abs(diff_y) > 70:
+            return False
+        self.y_previous_body = headBody.position[0]
+        return True
+
 
     def initPopulation(self):
-
         for i in range(2):
             animal = self.makeAnimal()
             self.population.append(animal)    
@@ -95,73 +113,32 @@ class Model:
     def moves(self, i, direction, animal):
         matrix = animal.getMatrix()
         self.smjoints = animal.getSmjoints()
-   
-        """self.legBodies[0][0].apply_impulse_at_world_point((0, 1), (0, 0))
-        self.legBodies[1][0].apply_impulse_at_world_point((0, 1), (0, 0))
-        self.legBodies[0][2].apply_impulse_at_world_point((0, -6), (0, 0))
-        self.legBodies[1][2].apply_impulse_at_world_point((0, -6), (0, 0))"""
-        """weight = self.animal.getWeight()
-        x, y = 50, -400
-        if j+1 % 2 != 0:
-            y = y - 5"""
-        
+
+        direction_1 = [1, -1 , -1, -1 , -1, -1 , -1, 1] #1
+        direction_2 = [-1, -1, 1 ,1 ,1 ,1, -1, -1] #2
+        direction_3 = [-1, 1, 1 ,1 ,1 ,1, 1, -1] #-1
+        direction_4 = [1, 1 , -1, -1 , -1, -1 , 1, 1] #-2
         for k in range(len(self.smjoints)):
             self.smjoints[k].rate = 0
-                
-        j1 = abs((i-1)%8)
-        j2 = abs((i-2)%8)
-        j3 = abs((i-3)%8)
-        j4 = abs((i-4)%8)
-        rotate = 5
-        """ if j1 < 0:
-            j1 = 6
-        if j2 < 0:
-            j2 = 7
-        if j3 < 0:
-            j3 = 1
-        if j4 < 0:
-            j4 = 0"""
-        if direction == 1:
-            #print(matrix, self.smjoints)
-            self.smjoints[matrix[0][0]].rate = matrix[0][1]
-            #self.smjoints[matrix[1][0]].rate = -matrix[1][1]
-            self.smjoints[matrix[2][0]].rate = -matrix[2][1]
-            self.smjoints[matrix[3][0]].rate = -matrix[3][1]
-            self.smjoints[matrix[4][0]].rate = -matrix[4][1]
-            self.smjoints[matrix[5][0]].rate = -matrix[5][1]
-            #self.smjoints[matrix[6][0]].rate = -matrix[6][1]
-            self.smjoints[matrix[7][0]].rate = matrix[7][1]
-        elif direction == 2:
-            self.smjoints[matrix[0][0]].rate = -matrix[0][1]
-            self.smjoints[matrix[1][0]].rate = -matrix[1][1]
-            self.smjoints[matrix[2][0]].rate = matrix[2][1]
-            self.smjoints[matrix[3][0]].rate = matrix[3][1]
-            self.smjoints[matrix[4][0]].rate = matrix[4][1]
-            self.smjoints[matrix[5][0]].rate = matrix[5][1]
-            self.smjoints[matrix[6][0]].rate = -matrix[6][1]
-            self.smjoints[matrix[7][0]].rate = -matrix[7][1]
-        elif direction == -1:
-            self.smjoints[matrix[0][0]].rate = -matrix[0][1]
-            #self.smjoints[matrix[1][0]].rate = matrix[1][1]
-            self.smjoints[matrix[2][0]].rate = matrix[2][1]
-            self.smjoints[matrix[3][0]].rate = matrix[3][1]
-            self.smjoints[matrix[4][0]].rate = matrix[4][1]
-            self.smjoints[matrix[5][0]].rate = matrix[5][1]
-            #self.smjoints[matrix[6][0]].rate = matrix[6][1]
-            self.smjoints[matrix[7][0]].rate = -matrix[7][1]
-
-        elif direction == -2:
-            self.smjoints[matrix[0][0]].rate = matrix[0][1]
-            self.smjoints[matrix[1][0]].rate = matrix[1][1]
-            self.smjoints[matrix[2][0]].rate = -matrix[2][1]
-            self.smjoints[matrix[3][0]].rate = -matrix[3][1]
-            self.smjoints[matrix[4][0]].rate = -matrix[4][1]
-            self.smjoints[matrix[5][0]].rate = -matrix[5][1]
-            self.smjoints[matrix[6][0]].rate = matrix[6][1]
-            self.smjoints[matrix[7][0]].rate = matrix[7][1]
         
-        #print([i, i+1, i+2, i+3, j4, j3, j2, j1], direction)
-        #self.legBodies[i][j+1].apply_impulse_at_world_point((x, y), (0, 25))
+        if direction == 1:
+            for i in range(len(matrix)):
+                if i not in [1, 6]:
+                    self.smjoints[matrix[i][0]].rate = matrix[i][1]*direction_1[i]
+            
+        elif direction == 2:
+            for i in range(len(matrix)):
+                self.smjoints[matrix[i][0]].rate = matrix[i][1]*direction_2[i]
+
+        elif direction == -1:
+            for i in range(len(matrix)):
+                if i not in [1, 6]:
+                    self.smjoints[matrix[i][0]].rate = matrix[i][1]*direction_3[i]
+            
+        elif direction == -2:
+            for i in range(len(matrix)):
+                self.smjoints[matrix[i][0]].rate = matrix[i][1]*direction_4[i]
+        
         
     """def temp_moves(self, i, direction):
         self.legBodies[0][0].apply_impulse_at_world_point((0, 1), (0, 0))

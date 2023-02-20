@@ -23,6 +23,7 @@ class Animal:
         self.rljoints = []  # rotation limit
         self.smjoints = []
         self.topBody = None
+        self.headBody = None
 
         self.w_leg = w_body * 0.15
         self.h_leg = h_body * 0.55
@@ -52,6 +53,9 @@ class Animal:
     
     def setMatrix(self, matrice):
         self.matrice = matrice
+
+    def getPosition(self):
+        return self.topBody.position
         
     @abstractmethod
     def makeBodyAndShape(self):
@@ -101,8 +105,8 @@ class Cow(Animal):
         self.headBody = None
         
 
-    def getTopBody(self):
-        return self.topBody
+    def getTopBodyAndHeadBody(self):
+        return self.topBody, self.headBody
 
     """def updatePositions(self):
         positions_leg = self.__getLegsPositions()
