@@ -22,6 +22,9 @@ class Model:
         self.x_previous_body = x_animal
         self.y_previous_body = y_animal
         self.mutation_prob = mutation_prob
+        self.time = 0
+        self.diff_x = 0
+        self.interval_time = 0
 
         if footNumber == 4:
             self.initPopulation()
@@ -38,7 +41,11 @@ class Model:
     def getPosition(self):
         return (self.x_animal, self.y_animal)
 
-    def setAnimal(self, animal):
+    def setAnimal(self, animal, time):
+        """
+            Supprime tous les bodies and shapes dans le parametre space. Et set l'animal et le sol
+        """
+        self.interval_time = time
         for body in self.space.bodies:
             self.space.remove(body)
         for shape in self.space.shapes:
@@ -47,16 +54,27 @@ class Model:
             self.space.remove(constraint)
         self.environment.setGround()
         self.environment.addAnimal(animal)
+        self.x_previous_body = self.x_animal
+        self.y_previous_body = self.y_animal
 
     def getPopulation(self):
         return self.population
 
     def addToPopulation(self, new_population):
         self.population.extend(new_population)
-        #print(self.population)
+        self.sortPopulation()
     
     def deleteAnimal(self, animal):
         self.population.remove(animal)
+
+    def sortPopulation(self):
+        animalAndScore = []
+        for animal in self.population:
+            animalAndScore.append((animal, animal.getScore()))
+        
+        animalAndScore = sorted(animalAndScore, key=lambda tup: tup[1])
+        print(animalAndScore)
+        self.population = [animal[0] for animal in animalAndScore]
 
     def getNewPopulation(self):
         new_population = self.genetic.get_new_population(self.population, self.mutation_prob)
@@ -67,24 +85,21 @@ class Model:
             new_population_1.append(animal)
         return new_population_1
 
-    def isMoving(self, start_time, topBody):
-        current_time = time.time()
-        diff_time = current_time - start_time 
-        diff_x = self.x_previous_body - topBody.position[0]
-
-        if abs(diff_x) < 20 and diff_time > 5:
-            return False
-        self.x_previous_body = topBody.position[0]
-        #print(diff_time, diff_x)
+    def isMoving(self):
+        if self.time // 5 == 1:
+            self.time = 0
+            self.interval_time = time.time()
+            if abs(self.diff_x) < 100:
+                self.diff_x = 0
+                self.time = 0
+                return False
         return True
 
-    def isFalling(self, headBody):
-        diff_y = self.y_previous_body - headBody.position[1]
-        if  abs(diff_y) > 70:
+    def isNotFalling(self, headBody):
+        diff_y = self.y_animal - headBody.position[1]
+        if abs(diff_y) > self.w_body*0.5:
             return False
-        self.y_previous_body = headBody.position[0]
         return True
-
 
     def initPopulation(self):
         for i in range(2):
@@ -93,16 +108,26 @@ class Model:
         self.genetic.updatePopulation(self.population)
 
     def makeAnimal(self):
+        """
+            Crée les 2 premiers parents
+        """
         if self.footnumber == 4:
-            animal = Cow(self.footnumber, self.weight, self.w_body, self.h_body, self.x_animal, self.y_animal)
+            animal = Cow(self.footnumber, self.weight, 
+                        self.w_body, self.h_body, 
+                        self.x_animal, self.y_animal)
             animal.setMatrix(self.makeMatrix())
         elif self.footnumber == 2:
-            animal = Autruche(self.footnumber, self.weight, self.w_body, self.h_body, self.x_animal, self.y_animal)
+            animal = Autruche(self.footnumber, self.weight, 
+                            self.w_body, self.h_body, 
+                            self.x_animal, self.y_animal)
             animal.setMatrix(self.makeMatrix())
         
         return animal
 
     def makeMatrix(self):
+        """
+            Crée une matrice pour les 2 premiers parents
+        """
         matrix = []
         y = self.footnumber*2
         for i in range(y):
@@ -110,7 +135,14 @@ class Model:
             matrix.append(x)
         return matrix
 
-    def moves(self, i, direction, animal):
+    def moves(self, direction, animal):
+        """
+            Fait bouger les parties des jambes dependant de la matrice
+        """
+        self.time += time.time() - self.interval_time
+        topBody = animal.getTopBodyAndHeadBody()[0]
+        self.diff_x += self.x_previous_body - topBody.position[0]
+        self.x_previous_body = topBody.position[0]
         matrix = animal.getMatrix()
         self.smjoints = animal.getSmjoints()
 
@@ -118,6 +150,7 @@ class Model:
         direction_2 = [-1, -1, 1 ,1 ,1 ,1, -1, -1] #2
         direction_3 = [-1, 1, 1 ,1 ,1 ,1, 1, -1] #-1
         direction_4 = [1, 1 , -1, -1 , -1, -1 , 1, 1] #-2
+
         for k in range(len(self.smjoints)):
             self.smjoints[k].rate = 0
         
@@ -139,71 +172,4 @@ class Model:
             for i in range(len(matrix)):
                 self.smjoints[matrix[i][0]].rate = matrix[i][1]*direction_4[i]
         
-        
-    """def temp_moves(self, i, direction):
-        self.legBodies[0][0].apply_impulse_at_world_point((0, 1), (0, 0))
-        self.legBodies[1][0].apply_impulse_at_world_point((0, 1), (0, 0))
-        self.legBodies[0][2].apply_impulse_at_world_point((0, -6), (0, 0))
-        self.legBodies[1][2].apply_impulse_at_world_point((0, -6), (0, 0
-        weight = self.animal.getWeight()
-        x, y = 50, -400
-        if j+1 % 2 != 0:
-            y = y - 5
-        
-        for k in range(len(self.smjoints)):
-            self.smjoints[k].rate = 0
-                
-        j1 = abs((i-1)%8)
-        j2 = abs((i-2)%8)
-        j3 = abs((i-3)%8)
-        j4 = abs((i-4)%8)
-        rotate = 2
-         if j1 < 0:
-            j1 = 6
-        if j2 < 0:
-            j2 = 7
-        if j3 < 0:
-            j3 = 1
-        if j4 < 0:
-            j4 = 0
-        if direction == 1:
-            self.smjoints[i].rate = rotate
-            #self.smjoints[i+1].rate = -rotate
-            self.smjoints[i+2].rate = -rotate
-            self.smjoints[i+3].rate = -rotate
-            self.smjoints[j1].rate = -rotate
-            self.smjoints[j2].rate = -rotate
-            #self.smjoints[j3].rate = -rotate
-            self.smjoints[j4].rate = rotate
-        elif direction == 2:
-            self.smjoints[i].rate = -rotate
-            self.smjoints[i+1].rate = -rotate
-            self.smjoints[i+2].rate = rotate
-            self.smjoints[i+3].rate = rotate
-            self.smjoints[j1].rate = rotate
-            self.smjoints[j2].rate = rotate
-            self.smjoints[j3].rate = -rotate
-            self.smjoints[j4].rate = -rotate
-        elif direction == -1:
-            self.smjoints[i].rate = -rotate
-            #self.smjoints[i+1].rate = rotate
-            self.smjoints[i+2].rate = rotate
-            self.smjoints[i+3].rate = rotate
-            self.smjoints[j1].rate = rotate
-            self.smjoints[j2].rate = rotate
-            #self.smjoints[j3].rate = rotate
-            self.smjoints[j4].rate = -rotate
-
-        elif direction == -2:
-            self.smjoints[i].rate = rotate
-            self.smjoints[i+1].rate = rotate
-            self.smjoints[i+2].rate = -rotate
-            self.smjoints[i+3].rate = -rotate
-            self.smjoints[j1].rate = -rotate
-            self.smjoints[j2].rate = -rotate
-            self.smjoints[j3].rate = rotate
-            self.smjoints[j4].rate = rotate
-        
-        print([i, i+1, i+2, i+3, j4, j3, j2, j1], direction)
-        #self.legBodies[i][j+1].apply_impulse_at_world_point((x, y), (0, 25))"""
     

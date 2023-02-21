@@ -46,20 +46,19 @@ class Genetic:
             return population[0], population[1]
 
         parent_1 = population[random.randint(0, index)]
-        if ((index+1) - (len(population)-1)) == 0:
-            #print("yes")
+        parent_2 = population[-1]
+        """if ((index+1) - (len(population)-1)) == 0:
             parent_2 = population[len(population)-1]
         else:
-            #print("no")
-            parent_2 = population[random.randint(index+1, len(population)-1)]
+            parent_2 = population[random.randint(index+1, len(population)-1)]"""
 
         return parent_1, parent_2
 
 
     def get_new_population(self, population, mutation_prob):
         population_2 = []
-
-        for i in range(len(population)):
+        population_size = len(population)
+        for i in range(population_size):
             parent_1, parent_2 = self.get_random_parents(population)
             child = self.crossover((parent_1.getMatrix(), parent_1.getScore()), (parent_2.getMatrix(), parent_2.getScore()))[0]
             
@@ -67,5 +66,6 @@ class Genetic:
                 child = self.mutate(child)
 
             population_2.append(child)
-
+            if population_size == 1:
+                return population_2
         return population_2

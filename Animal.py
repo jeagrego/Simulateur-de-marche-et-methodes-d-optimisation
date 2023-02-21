@@ -31,7 +31,10 @@ class Animal:
         self.h_hoof = h_body * 0.10
 
     def setScore(self, score):
-        self.score = score
+        if score < 0:
+            self.score = 0
+        else:
+            self.score = score
     
     def getFootNumber(self):
         return self.footNumber
