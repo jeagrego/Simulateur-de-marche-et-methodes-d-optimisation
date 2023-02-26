@@ -63,7 +63,14 @@ class Model:
     def addToPopulation(self, new_population):
         self.population.extend(new_population)
         self.sortPopulation()
-    
+        if len(self.population) > 16:
+            self.balanced()
+        print(self.population)
+
+    def balanced(self):
+        for i in range(int(len(self.population)/2)):
+            self.population.pop(0)
+
     def deleteAnimal(self, animal):
         self.population.remove(animal)
 
@@ -73,7 +80,7 @@ class Model:
             animalAndScore.append((animal, animal.getScore()))
         
         animalAndScore = sorted(animalAndScore, key=lambda tup: tup[1])
-        print(animalAndScore)
+        #print(animalAndScore)
         self.population = [animal[0] for animal in animalAndScore]
 
     def getNewPopulation(self):
@@ -89,7 +96,7 @@ class Model:
         if self.time // 5 == 1:
             self.time = 0
             self.interval_time = time.time()
-            if abs(self.diff_x) < 100:
+            if abs(self.diff_x) < 80:
                 self.diff_x = 0
                 self.time = 0
                 return False
@@ -131,7 +138,7 @@ class Model:
         matrix = []
         y = self.footnumber*2
         for i in range(y):
-            x = [random.randint(0,y-1), random.uniform(-5.0, 5.0)]
+            x = [i, random.uniform(-5.0, 5.0)]
             matrix.append(x)
         return matrix
 

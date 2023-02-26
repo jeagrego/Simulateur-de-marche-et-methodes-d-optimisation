@@ -5,7 +5,7 @@ import pymunk.pygame_util
 import Environment
 import time
 
-width, height = 1200, 700
+width, height = 1800, 700
 
 
 class Display:
@@ -26,6 +26,8 @@ class Display:
         self.i = 0
         self.direction = 1   
         pygame.display.set_caption("Simulation de marche")
+        self.translate_speed = 1000
+        self.top = pymunk.Body()
 
     def setDirection(self):
         if self.i == 2:
@@ -43,20 +45,25 @@ class Display:
         contractMusclesRight = pygame.USEREVENT + 1
         timeToMove = 500
         pygame.time.set_timer(contractMusclesRight, timeToMove, 160000000)
-        #self.new_population = []
-        #self.model.getNewPopulation()
         while self.running:
             self.setDirection()
-            
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
                 elif event.type == contractMusclesRight:
-                    #print("time to move")
                     self.display_simulation()
                     self.i += 2
+            """ translation = pymunk.Transform()
+            translation = translation.translated(
+                5,
+                0,
+            )
 
-            #print(self.generation)
+            draw_options.transform = (pymunk.Transform.translation(width*0.5, height*0.5)
+                                    @ translation
+                                    @ pymunk.Transform.translation(-width*0.5, -height*0.5)
+                                    ) """
+
             self.screen.fill(pygame.Color("white"))
             self.space.debug_draw(draw_options)
             # Info and flip screen
@@ -77,32 +84,27 @@ class Display:
             self.start_time = time.time()  
             self.model.setAnimal(self.animal, self.start_time)
         
-        top, head = self.animal.getTopBodyAndHeadBody()
+        self.top, self.head = self.animal.getTopBodyAndHeadBody()
         isMoving = self.model.isMoving()
-        isNotFalling = self.model.isNotFalling(head)
-        
+        isNotFalling = self.model.isNotFalling(self.head)
+
         if isMoving and isNotFalling:
             self.start_time = time.time()
             if self.i <= 2:
-                self.model.moves(self.direction, self.animal, self.start_time)
+                self.model.moves(self.direction, self.animal)
             elif self.i >= 4:
-                self.model.moves(self.direction, self.animal, self.start_time)
+                self.model.moves(self.direction, self.animal)
 
         else:
-            distance = top.position[0] - self.model.getPosition()[0]
-            self.animal.setScore(distance)
+            distance = self.top.position[0] - self.model.getPosition()[0]
+            self.animal.setScore(distance) #TODO revoir le score
             self.new_population.remove(self.animal)
 
             if len(self.new_population) != 0:
                 self.animal = self.new_population[0]
                 self.start_time = time.time()
                 self.model.setAnimal(self.animal, self.start_time) 
-                self.generation += 1
+            else:
                 print(self.generation)
-            
-        """self.translation = self.translation.translated(width-self.animal.getPosition()[0], 0)
-        self.space.transform = (
-            pymunk.Transform.translation(width*0.5, height*0.5)
-            @ self.translation
-            @ pymunk.Transform.translation(-width*0.5, -height*0.5)
-        )"""
+    
+

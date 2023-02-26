@@ -111,18 +111,6 @@ class Cow(Animal):
     def getTopBodyAndHeadBody(self):
         return self.topBody, self.headBody
 
-    """def updatePositions(self):
-        positions_leg = self.__getLegsPositions()
-        positions_foot = self.__getFootsPositions()
-
-        for leg in self.legBodies:
-            for i in range(4):
-                leg[i].position = positions_leg[i]
-
-        for foot in self.footBodies:
-            for i in range(2):
-                foot[i].position = positions_foot[i]"""
-
     def makeBodyAndShape(self):
         self.makeBodies()
         self.makeshapes()
