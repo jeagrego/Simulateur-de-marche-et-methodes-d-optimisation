@@ -20,7 +20,8 @@ class Display:
         self.font = pygame.font.SysFont("Arial", 16)
         self.fps = 60
         self.dt = 1.0 / self.fps
-        self.generation = 1
+        self.individu = 0
+        self.generation = 0
         self.new_population = []
         self.translation = pymunk.Transform()
         self.i = 0
@@ -49,25 +50,16 @@ class Display:
             self.setDirection()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    return
+                    return 
                 elif event.type == contractMusclesRight:
                     self.display_simulation()
                     self.i += 2
-            """ translation = pymunk.Transform()
-            translation = translation.translated(
-                5,
-                0,
-            )
-
-            draw_options.transform = (pymunk.Transform.translation(width*0.5, height*0.5)
-                                    @ translation
-                                    @ pymunk.Transform.translation(-width*0.5, -height*0.5)
-                                    ) """
 
             self.screen.fill(pygame.Color("white"))
             self.space.debug_draw(draw_options)
             # Info and flip screen
-            self.screen.blit(self.font.render("fps: " + str(self.clock.get_fps()), True, pygame.Color("black")), (0, 0))
+            self.screen.blit(self.font.render("generation :" + str(self.generation) + " individu: " + str(self.individu) 
+                                              , True, pygame.Color("black")), (0, 0))
             pygame.display.flip()
             self.space.step(self.dt)
             self.clock.tick(self.fps)
@@ -80,7 +72,7 @@ class Display:
             self.new_population = self.model.getNewPopulation()  
             self.model.addToPopulation(self.new_population)
             self.animal = self.new_population[0]
-            self.generation += 1 
+            self.individu += 1 
             self.start_time = time.time()  
             self.model.setAnimal(self.animal, self.start_time)
         
@@ -104,7 +96,10 @@ class Display:
                 self.animal = self.new_population[0]
                 self.start_time = time.time()
                 self.model.setAnimal(self.animal, self.start_time) 
+                self.individu += 1 
             else:
-                print(self.generation)
+                self.generation += 1
+                self.individu = 0
+
     
 

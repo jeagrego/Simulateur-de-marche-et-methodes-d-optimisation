@@ -1,12 +1,13 @@
-from DisplayModel import *
-from Model import *
-from Animal import *
+
 import sys
+import Menu
 
 
 if __name__ == "__main__":
-    model = Model(0.5 ,4, 100, 200, 100)
+    "model = Model.Model(4, 100, 200, 100)"
     """Animal.Cow(4, 100, 150, 332.75, 200, 100)"""
-    display = Display(model)
-    sys.exit(display.show())
-    
+    "display = DisplayModel.Display(model)"
+    # Example function call
+    " button(340, 560, 400, 200, randomBtn, randomBtn_hover, random_func)"
+    menu = Menu.Menu()
+    sys.exit(menu.intro())

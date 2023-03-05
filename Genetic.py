@@ -47,11 +47,6 @@ class Genetic:
 
         parent_1 = population[random.randint(0, index)]
         parent_2 = population[-1]
-        """if ((index+1) - (len(population)-1)) == 0:
-            parent_2 = population[len(population)-1]
-        else:
-            parent_2 = population[random.randint(index+1, len(population)-1)]"""
-
         return parent_1, parent_2
 
 

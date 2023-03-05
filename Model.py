@@ -65,7 +65,6 @@ class Model:
         self.sortPopulation()
         if len(self.population) > 16:
             self.balanced()
-        print(self.population)
 
     def balanced(self):
         for i in range(int(len(self.population)/2)):
@@ -80,7 +79,6 @@ class Model:
             animalAndScore.append((animal, animal.getScore()))
         
         animalAndScore = sorted(animalAndScore, key=lambda tup: tup[1])
-        #print(animalAndScore)
         self.population = [animal[0] for animal in animalAndScore]
 
     def getNewPopulation(self):
