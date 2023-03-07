@@ -3,9 +3,9 @@ import pygame
 import sys
 import pymunk.pygame_util
 import Environment
-import time
-
-width, height = 1800, 700
+from time import *
+from copy import *
+from constantes import *
 
 
 class Display:
@@ -69,11 +69,13 @@ class Display:
         if self.new_population == []:
             self.i = 0
             self.direction = 1   
-            self.new_population = self.model.getNewPopulation()  
-            self.model.addToPopulation(self.new_population)
-            self.animal = self.new_population[0]
+            if self.generation != 0:
+                self.new_population = self.model.getNewPopulation()
+            else:
+                self.new_population = self.model.getPopulation()
+            self.animal = self.new_population[self.individu]
             self.individu += 1 
-            self.start_time = time.time()  
+            self.start_time = time()  
             self.model.setAnimal(self.animal, self.start_time)
         
         self.top, self.head = self.animal.getTopBodyAndHeadBody()
@@ -81,25 +83,24 @@ class Display:
         isNotFalling = self.model.isNotFalling(self.head)
 
         if isMoving and isNotFalling:
-            self.start_time = time.time()
-            if self.i <= 2:
-                self.model.moves(self.direction, self.animal)
-            elif self.i >= 4:
-                self.model.moves(self.direction, self.animal)
+            self.start_time = time()
+            self.model.moves(self.direction, self.animal)
+            
 
         else:
             distance = self.top.position[0] - self.model.getPosition()[0]
             self.animal.setScore(distance) #TODO revoir le score
-            self.new_population.remove(self.animal)
+            #self.new_population.remove(self.animal)
 
-            if len(self.new_population) != 0:
-                self.animal = self.new_population[0]
-                self.start_time = time.time()
+            if self.individu < 10:
+                self.animal = self.new_population[self.individu]
+                self.start_time = time()
                 self.model.setAnimal(self.animal, self.start_time) 
                 self.individu += 1 
             else:
                 self.generation += 1
                 self.individu = 0
+                self.model.sortPopulation()
 
     
 

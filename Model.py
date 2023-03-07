@@ -3,7 +3,9 @@ import pymunk.pygame_util
 from Environment import Environment
 from Animal import *
 from Genetic import *
-import time
+from time import *
+from constantes import *
+from copy import *
 
 
 class Model:
@@ -25,13 +27,11 @@ class Model:
         self.time = 0
         self.diff_x = 0
         self.interval_time = 0
+        self.checkParameters()
 
-        if footNumber == 4:
+    def checkParameters(self):
+        if self.footnumber == 4:
             self.initPopulation()
-    
-        elif footNumber == 2:
-            print("unavailable")
-
         else:
             raise Exception("Error : wrong foot numbers")
 
@@ -61,10 +61,7 @@ class Model:
         return self.population
 
     def addToPopulation(self, new_population):
-        self.population.extend(new_population)
-        self.sortPopulation()
-        if len(self.population) > 16:
-            self.balanced()
+        self.population = new_population
 
     def balanced(self):
         for i in range(int(len(self.population)/2)):
@@ -77,23 +74,41 @@ class Model:
         animalAndScore = []
         for animal in self.population:
             animalAndScore.append((animal, animal.getScore()))
-        
+            print("dans la methode sortPopulation : ", animal.getScore())
         animalAndScore = sorted(animalAndScore, key=lambda tup: tup[1])
         self.population = [animal[0] for animal in animalAndScore]
+        self.writeBest(self.population[-1])
+
+    def writeBest(self, animal):
+        score = animal.getScore()
+        matrice = animal.getMatrix()
+
+        file1 = open("best_individu.txt", "w")
+        file1.write(str(score)+"\n")
+        for i in range(self.footnumber*2):
+            line = ""
+            for j in range(len(matrice[i])):
+                line += str(matrice[i][j]) + " "
+            line += "\n"
+            file1.write(line)
+        
 
     def getNewPopulation(self):
+
         new_population = self.genetic.get_new_population(self.population, self.mutation_prob)
         new_population_1 = []
         for i in range(len(new_population)):
             animal = self.makeAnimal()
             animal.setMatrix(new_population[i])
             new_population_1.append(animal)
+        self.addToPopulation(new_population_1)
         return new_population_1
+    
 
     def isMoving(self):
         if self.time // 5 == 1:
             self.time = 0
-            self.interval_time = time.time()
+            self.interval_time = time()
             if abs(self.diff_x) < 80:
                 self.diff_x = 0
                 self.time = 0
@@ -101,21 +116,20 @@ class Model:
         return True
 
     def isNotFalling(self, headBody):
-        diff_y = self.y_animal - headBody.position[1]
-        if abs(diff_y) > self.w_body*0.5:
+        diff_y = 600 - headBody.position[1]
+        if diff_y < 130:
+            return False
+        if  headBody.position[0] < 0 or headBody.position[0] > width :
             return False
         return True
 
     def initPopulation(self):
-        for i in range(2):
+        for i in range(10):
             animal = self.makeAnimal()
             self.population.append(animal)    
-        self.genetic.updatePopulation(self.population)
+        #self.genetic.updatePopulation(self.population)
 
     def makeAnimal(self):
-        """
-            Crée les 2 premiers parents
-        """
         if self.footnumber == 4:
             animal = Cow(self.footnumber, self.weight, 
                         self.w_body, self.h_body, 
@@ -144,7 +158,7 @@ class Model:
         """
             Fait bouger les parties des jambes dependant de la matrice
         """
-        self.time += time.time() - self.interval_time
+        self.time += time() - self.interval_time
         topBody = animal.getTopBodyAndHeadBody()[0]
         self.diff_x += self.x_previous_body - topBody.position[0]
         self.x_previous_body = topBody.position[0]

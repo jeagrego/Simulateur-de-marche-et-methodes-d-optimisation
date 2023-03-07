@@ -31,11 +31,13 @@ class Genetic:
         Modifie une chaîne individuelle en remplaçant aléatoirement un caractère par un autre caractère dans gene_set
         """
 
-        leg_index = random.randrange(0, len(self.leg_set)-1)
-        rotation_index = random.randrange(0, len(self.leg_set)-1)
+        #leg_index = random.randrange(0, len(self.leg_set)-1)
+        rotation_index_1 = random.randrange(0, len(self.leg_set)-1)
+        rotation_index_2 = random.randrange(0, len(self.leg_set)-1)
 
-        individual[leg_index][0] = self.leg_set[random.randint(0, len(self.leg_set)-1)]
-        individual[rotation_index][1] = self.rotation_set[random.randint(0, len(self.rotation_set)-1)]
+        #individual[leg_index][0] = self.leg_set[random.randint(0, len(self.leg_set)-1)]
+        individual[rotation_index_1][1] = self.rotation_set[random.randint(0, len(self.rotation_set)-1)]
+        individual[rotation_index_2][1] = self.rotation_set[random.randint(0, len(self.rotation_set)-1)]
 
         return individual
 
