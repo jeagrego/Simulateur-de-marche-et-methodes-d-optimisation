@@ -66,7 +66,7 @@ class Display:
            
     def display_simulation(self):
 
-        if self.new_population == []:
+        if self.individu == 0:
             self.i = 0
             self.direction = 1   
             if self.generation != 0:
