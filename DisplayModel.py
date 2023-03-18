@@ -25,7 +25,8 @@ class Display:
         self.new_population = []
         self.translation = pymunk.Transform()
         self.i = 0
-        self.direction = 1   
+        self.direction = 1  
+        self.distance = 0 
         pygame.display.set_caption("Simulation de marche")
         self.translate_speed = 1000
         self.top = pymunk.Body()
@@ -47,18 +48,20 @@ class Display:
         timeToMove = 500
         pygame.time.set_timer(contractMusclesRight, timeToMove, 160000000)
         while self.running:
+            print(self.distance)
             self.setDirection()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return 
                 elif event.type == contractMusclesRight:
-                    self.display_simulation()
+                    if not self.display_simulation():
+                        self.distance = 0
                     self.i += 2
 
             self.screen.fill(pygame.Color("white"))
             self.space.debug_draw(draw_options)
             # Info and flip screen
-            self.screen.blit(self.font.render("generation :" + str(self.generation) + " individu: " + str(self.individu) 
+            self.screen.blit(self.font.render("generation :" + str(self.generation) + " individu: " + str(self.individu) + " Score: " + str(self.distance)
                                               , True, pygame.Color("black")), (0, 0))
             pygame.display.flip()
             self.space.step(self.dt)
@@ -68,7 +71,7 @@ class Display:
 
         if self.individu == 0:
             self.i = 0
-            self.direction = 1   
+            self.direction = 1  
             if self.generation != 0:
                 self.new_population = self.model.getNewPopulation()
             else:
@@ -85,22 +88,26 @@ class Display:
         if isMoving and isNotFalling:
             self.start_time = time()
             self.model.moves(self.direction, self.animal)
+            self.distance = self.top.position[0] - self.model.getPosition()[0]
+            return True
             
 
         else:
-            distance = self.top.position[0] - self.model.getPosition()[0]
-            self.animal.setScore(distance) #TODO revoir le score
-            #self.new_population.remove(self.animal)
-
+            self.distance_final = self.top.position[0] - self.model.getPosition()[0]
+            self.animal.setScore(self.distance_final) #TODO revoir le score
+            
             if self.individu < 10:
                 self.animal = self.new_population[self.individu]
                 self.start_time = time()
                 self.model.setAnimal(self.animal, self.start_time) 
                 self.individu += 1 
+    
             else:
-                self.generation += 1
                 self.individu = 0
                 self.model.sortPopulation()
+                self.model.completeScoreGeneration(self.generation)
+                self.generation += 1 
+        return False
 
     
 

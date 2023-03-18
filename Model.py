@@ -27,6 +27,7 @@ class Model:
         self.time = 0
         self.diff_x = 0
         self.interval_time = 0
+        self.bestSCore = 0
         self.checkParameters()
 
     def checkParameters(self):
@@ -77,7 +78,10 @@ class Model:
             print("dans la methode sortPopulation : ", animal.getScore())
         animalAndScore = sorted(animalAndScore, key=lambda tup: tup[1])
         self.population = [animal[0] for animal in animalAndScore]
-        self.writeBest(self.population[-1])
+        currentBestScore = self.population[-1].getScore()
+        if self.bestSCore < currentBestScore:
+            self.bestSCore = self.population[-1]
+            self.writeBest(self.population[-1])
 
     def writeBest(self, animal):
         score = animal.getScore()
@@ -92,7 +96,6 @@ class Model:
             line += "\n"
             file1.write(line)
         
-
     def getNewPopulation(self):
 
         new_population = self.genetic.get_new_population(self.population, self.mutation_prob)
@@ -127,20 +130,13 @@ class Model:
         for i in range(10):
             animal = self.makeAnimal()
             self.population.append(animal)    
-        #self.genetic.updatePopulation(self.population)
 
     def makeAnimal(self):
         if self.footnumber == 4:
             animal = Cow(self.footnumber, self.weight, 
                         self.w_body, self.h_body, 
                         self.x_animal, self.y_animal)
-            animal.setMatrix(self.makeMatrix())
-        elif self.footnumber == 2:
-            animal = Autruche(self.footnumber, self.weight, 
-                            self.w_body, self.h_body, 
-                            self.x_animal, self.y_animal)
-            animal.setMatrix(self.makeMatrix())
-        
+            animal.setMatrix(self.makeMatrix()) 
         return animal
 
     def makeMatrix(self):
@@ -191,4 +187,14 @@ class Model:
             for i in range(len(matrix)):
                 self.smjoints[matrix[i][0]].rate = matrix[i][1]*direction_4[i]
         
-    
+    def completeScoreGeneration(self, generationNumber):
+        score = 0
+
+        for animal in self.population:
+            score += animal.getScore()
+        
+        file1 = open("score_generation.txt", "a")
+
+        line = str(generationNumber) + " " + str(score/10) + "\n"
+        file1.write(line)
+        
