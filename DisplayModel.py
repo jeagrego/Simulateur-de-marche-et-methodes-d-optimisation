@@ -47,6 +47,10 @@ class Display:
         contractMusclesRight = pygame.USEREVENT + 1
         timeToMove = 500
         pygame.time.set_timer(contractMusclesRight, timeToMove, 160000000)
+        back_button = pygame.image.load("./imgs/back_arrow.png").convert_alpha()
+        back_button_active = pygame.image.load("./imgs/back_arrow_active.png").convert_alpha()
+        x = 50
+        y = 50
         while self.running:
             print(self.distance)
             self.setDirection()
@@ -59,6 +63,15 @@ class Display:
                     self.i += 2
 
             self.screen.fill(pygame.Color("white"))
+            #back button
+            self.screen.blit(back_button, (x, y))
+            mouse = pygame.mouse.get_pos()
+            click = pygame.mouse.get_pressed()
+            if x + 80 > mouse[0] > x and y + 70 > mouse[1] > y:
+                if click[0] == 1:
+                    return
+                self.screen.blit(back_button_active, (x, y))
+            #end back button
             self.space.debug_draw(draw_options)
             # Info and flip screen
             self.screen.blit(self.font.render("generation :" + str(self.generation) + " individu: " + str(self.individu) + " Score: " + str(self.distance)

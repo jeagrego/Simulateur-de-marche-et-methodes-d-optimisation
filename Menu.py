@@ -24,8 +24,8 @@ class Menu:
         self.input_box = [[self.label_boxes[i], pygame.Rect(self.x_pos, self.y_pos + self.y_offset*i, 140, 32)] for i in range(self.number_boxes)]
         self.color_inactive = pygame.Color('lightskyblue3')
         self.color = [self.color_inactive for i in range(self.number_boxes)]
-        self.start_button_active_img = pygame.image.load("./imgs/button_active_1.png").convert_alpha()
-        self.start_button_inactive_img = pygame.image.load("./imgs/button_inactive.png").convert_alpha()
+        self.start_button_active_img = pygame.image.load("./imgs/envoyer_active.png").convert_alpha()
+        self.start_button_inactive_img = pygame.image.load("./imgs/envoyer_inactive.png").convert_alpha()
 
     def intro(self):
         title_img = pygame.image.load("./imgs/welcome.png").convert_alpha()
@@ -83,7 +83,7 @@ class Menu:
 
     def boolButton(self):
         y = self.y_pos + self.y_offset*(self.number_boxes+1)
-        return self.button(self.x_pos-250, y, 464, 140, self.start_button_inactive_img, self.start_button_active_img, self.clicked)
+        return self.button(self.x_pos-150, y, 464, 140, self.start_button_inactive_img, self.start_button_active_img, self.clicked)
 
     def drawModel(self, isDone):
         if isDone:
@@ -104,11 +104,14 @@ class Menu:
     def button(self, x, y, w, h, inactive, active, action=None):
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
-        self.screen.blit(active, (x, y))
+        self.screen.blit(inactive, (x, y))
 
         if x + w > mouse[0] > x and y + h > mouse[1] > y:
             if click[0] == 1 and action is not None:
                 return action()
+
+            else:
+                self.screen.blit(active, (x, y))
 
     def clicked(self):
         return True
