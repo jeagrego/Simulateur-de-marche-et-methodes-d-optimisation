@@ -80,7 +80,7 @@ class Model:
         self.population = [animal[0] for animal in animalAndScore]
         currentBestScore = self.population[-1].getScore()
         if self.bestSCore < currentBestScore:
-            self.bestSCore = self.population[-1]
+            self.bestSCore = self.population[-1].getScore()
             self.writeBest(self.population[-1])
 
     def writeBest(self, animal):
