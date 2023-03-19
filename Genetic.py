@@ -51,12 +51,38 @@ class Genetic:
         parent_2 = population[-1]
         return parent_1, parent_2
 
+    def get_not_random_parents(self, population):
+        # calculer la somme totale des scores
+        total_score = sum([indiv.getScore() for indiv in population])
+
+        # sélectionner un nombre aléatoire entre 0 et la somme totale des scores
+        random_num = random.uniform(0, total_score)
+
+        # sélectionner le premier parent
+        cum_score = 0
+        for indiv in population:
+            cum_score += indiv.getScore()
+            if cum_score >= random_num:
+                parent_1 = indiv
+                break
+
+        # répéter les étapes 2 à 4 pour sélectionner le deuxième parent
+        random_num = random.uniform(0, total_score)
+        cum_score = 0
+        for indiv in population:
+            cum_score += indiv.getScore()
+            if cum_score >= random_num:
+                parent_2 = indiv
+                break
+
+        return parent_1, parent_2
+
 
     def get_new_population(self, population, mutation_prob):
         population_2 = []
         population_size = len(population)
         for i in range(population_size):
-            parent_1, parent_2 = self.get_random_parents(population)
+            parent_1, parent_2 = self.get_not_random_parents(population)
             child = self.crossover((parent_1.getMatrix(), parent_1.getScore()), (parent_2.getMatrix(), parent_2.getScore()))[0]
             
             if random.uniform(0, 1) <= mutation_prob:
