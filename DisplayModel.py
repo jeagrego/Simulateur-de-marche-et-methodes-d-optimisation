@@ -49,6 +49,9 @@ class Display:
         pygame.time.set_timer(contractMusclesRight, timeToMove, 160000000)
         back_button = pygame.image.load("./imgs/back_arrow.png").convert_alpha()
         back_button_active = pygame.image.load("./imgs/back_arrow_active.png").convert_alpha()
+        finish_line = pygame.image.load("./imgs/finish_line.png").convert_alpha()
+        grass = pygame.image.load("./imgs/grass1.png").convert_alpha()
+        sky = pygame.image.load("./imgs/sky.jpg").convert_alpha()
         x = 50
         y = 50
         while self.running:
@@ -63,6 +66,8 @@ class Display:
                     self.i += 2
 
             self.screen.fill(pygame.Color("white"))
+            self.screen.blit(sky, (0, 0))
+            self.screen.blit(finish_line, (1700, 350))
             #back button
             self.screen.blit(back_button, (x, y))
             mouse = pygame.mouse.get_pos()
@@ -76,6 +81,7 @@ class Display:
             # Info and flip screen
             self.screen.blit(self.font.render("generation :" + str(self.generation) + " individu: " + str(self.individu) + " Score: " + str(self.distance)
                                               , True, pygame.Color("black")), (0, 0))
+            self.screen.blit(grass, (0, 560))
             pygame.display.flip()
             self.space.step(self.dt)
             self.clock.tick(self.fps)

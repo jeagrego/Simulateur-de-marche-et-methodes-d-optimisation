@@ -153,18 +153,24 @@ class Cow(Animal):
 
    
     def makeshapes(self):
-        
-        self.bodiesAndShapes.append((self.topBody, pymunk.Poly.create_box(self.topBody, (self.w_body, self.h_body))))
-        self.bodiesAndShapes.append((self.headBody, pymunk.Poly.create_box(self.headBody, (self.w_body*0.3, self.h_body*0.5))))
+
+        bodyShape = pymunk.Poly.create_box(self.topBody, (self.w_body, self.h_body))
+        bodyShape.color = (142, 68, 173, 255)
+        self.bodiesAndShapes.append((self.topBody, bodyShape))
+        headShape = pymunk.Poly.create_box(self.headBody, (self.w_body*0.3, self.h_body*0.5))
+        headShape.color = (142, 68, 173, 255)
+        self.bodiesAndShapes.append((self.headBody, headShape))
 
         for leg in self.legBodies:
             for body in leg:
                 legShape = pymunk.Poly.create_box(body, (self.w_leg, self.h_leg))
+                legShape.color = (142, 68, 173, 255)
                 self.bodiesAndShapes.append((body, legShape))
 
         for foot in self.footBodies:
             for body in foot:
                 footShape = pymunk.Poly.create_box(body, (self.w_hoof, self.h_hoof))
+                footShape.color = (142, 68, 173, 255)
                 footShape.friction = 0.5
                 self.bodiesAndShapes.append((body, footShape))
     

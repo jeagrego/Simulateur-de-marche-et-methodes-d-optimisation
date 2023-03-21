@@ -15,7 +15,7 @@ class Environment:
         self.setGround()
 
     def setGround(self):
-        ground = pymunk.Segment(self.space.static_body, (-600, 600), (2400, 600), 100)
+        ground = pymunk.Segment(self.space.static_body, (-600, 900), (2400, 900), 300)
         ground.friction = 1.0
         ground.collision_type = 2
         self.space.add(ground)
