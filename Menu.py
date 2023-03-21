@@ -2,6 +2,7 @@ import pygame
 from Model import *
 from DisplayModel import *
 from constantes import *
+from Slider import *
 
 
 class Menu:
@@ -19,9 +20,10 @@ class Menu:
         self.y_offset = 70
         self.number_boxes = 5
         self.default_val_boxes = ["0.1", "4", "100", "200", "100"]
-        self.label_boxes = ["Mutation probability :", "Foot number :", "Weight :", "Width body :", "Height Body :"]
+        self.min_max_values = [[0,100,20], [4,4,0], [100,200,0], [100,300,100], [100,200,0]]
+        self.label_boxes = ["Mutation probability(%) :", "Foot number :", "Weight(kg) :", "Width body(pixels) :", "Height Body(pixels) :"]
         self.text = [self.default_val_boxes[i] for i in range(self.number_boxes)]
-        self.input_box = [[self.label_boxes[i], pygame.Rect(self.x_pos, self.y_pos + self.y_offset*i, 140, 32)] for i in range(self.number_boxes)]
+        self.input_box = [[self.label_boxes[i], pygame.Rect(self.x_pos, self.y_pos + self.y_offset*i, 240, 32)] for i in range(self.number_boxes)]
         self.color_inactive = pygame.Color('lightskyblue3')
         self.color = [self.color_inactive for i in range(self.number_boxes)]
         self.start_button_active_img = pygame.image.load("./imgs/envoyer_active.png").convert_alpha()
@@ -55,7 +57,8 @@ class Menu:
         color_active = pygame.Color('dodgerblue2')
         active = [False for i in range(self.number_boxes)]
         isDone = False
-
+        sliders = [Slider((self.x_pos, self.y_pos + self.y_offset*i), self.min_max_values[i][0], self.min_max_values[i][1], self.min_max_values[i][2], "",(200,32) ) for i in range(self.number_boxes)]
+        values = ["" for i in range(self.number_boxes)]
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -67,16 +70,14 @@ class Menu:
                         else:
                             active[i] = False
                         self.color[i] = color_active if active[i] else self.color_inactive
-                if event.type == pygame.KEYDOWN:
-                    for i in range(len(self.input_box)):
-                        if active[i] and i != 1:
-                            if event.key == pygame.K_BACKSPACE:
-                                self.text[i] = self.text[i][:-1]
-                            else:
-                                self.text[i] += event.unicode
             self.screen.fill((255, 255, 255))
             isDone = self.boolButton()
-            self.drawModel(isDone)
+            for i in range(len(sliders)):
+                sliders[i].render(self.screen, self.color[i])
+                sliders[i].changeValue()
+                values[i] = str(sliders[i].getValue())
+            if isDone :
+                self.drawModel(values)
             self.drawOptions()
             pygame.display.flip()
             self.clock.tick(self.fps)
@@ -85,21 +86,20 @@ class Menu:
         y = self.y_pos + self.y_offset*(self.number_boxes+1)
         return self.button(self.x_pos-150, y, 464, 140, self.start_button_inactive_img, self.start_button_active_img, self.clicked)
 
-    def drawModel(self, isDone):
-        if isDone:
-            self.model = Model(float(self.text[0]), int(self.text[1]), int(self.text[2]), int(self.text[3]), int(self.text[4]))
-            displaymodel = Display(self.model)
-            displaymodel.show()
+    def drawModel(self, values):
+        self.model = Model(float(values[0]), int(values[1]), float(values[2]), float(values[3]), float(values[4]))
+        displaymodel = Display(self.model)
+        displaymodel.show()
 
     def drawOptions(self):
         for i in range(self.number_boxes):
-                txt_surface = self.font.render(self.text[i], True, self.color[i])
-                txt_surface2 = self.font.render(self.input_box[i][0], True, self.color[i])
-                width = max(200, txt_surface.get_width() + 10)
-                self.input_box[i][1].w = width
-                self.screen.blit(txt_surface, (self.input_box[i][1].x + 5, self.input_box[i][1].y + 5))
-                self.screen.blit(txt_surface2, (self.input_box[i][1].x - 250, self.input_box[i][1].y + 5))
-                pygame.draw.rect(self.screen, self.color[i], self.input_box[i][1], 2)
+            txt_surface = self.font.render(self.text[i], True, self.color[i])
+            txt_surface2 = self.font.render(self.input_box[i][0], True, self.color[i])
+            width = max(200, txt_surface.get_width() + 10)
+            self.input_box[i][1].w = width
+            #self.screen.blit(txt_surface, (self.input_box[i][1].x + 5, self.input_box[i][1].y + 5))
+            self.screen.blit(txt_surface2, (self.input_box[i][1].x - 250, self.input_box[i][1].y + 5))
+            pygame.draw.rect(self.screen, self.color[i], self.input_box[i][1], 2)
 
     def button(self, x, y, w, h, inactive, active, action=None):
         mouse = pygame.mouse.get_pos()

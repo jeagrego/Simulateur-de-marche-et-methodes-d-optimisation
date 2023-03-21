@@ -3,6 +3,7 @@ import pymunk.pygame_util
 from Environment import Environment
 from Animal import *
 from Genetic import *
+from DifferentialEvolution import *
 from time import *
 from constantes import *
 from copy import *
@@ -14,6 +15,7 @@ class Model:
         self.space = pymunk.Space()
         self.environment = Environment(self.space)
         self.genetic = Genetic(footNumber)
+        self.differential_evolution = DifferentialEvolution([])
         self.population = []
         self.footnumber = footNumber
         self.weight = weight
@@ -75,7 +77,6 @@ class Model:
         animalAndScore = []
         for animal in self.population:
             animalAndScore.append((animal, animal.getScore()))
-            print("dans la methode sortPopulation : ", animal.getScore())
         animalAndScore = sorted(animalAndScore, key=lambda tup: tup[1])
         self.population = [animal[0] for animal in animalAndScore]
         currentBestScore = self.population[-1].getScore()
@@ -97,7 +98,6 @@ class Model:
             file1.write(line)
         
     def getNewPopulation(self):
-
         new_population = self.genetic.get_new_population(self.population, self.mutation_prob)
         new_population_1 = []
         for i in range(len(new_population)):
@@ -186,15 +186,21 @@ class Model:
         elif direction == -2:
             for i in range(len(matrix)):
                 self.smjoints[matrix[i][0]].rate = matrix[i][1]*direction_4[i]
-        
-    def completeScoreGeneration(self, generationNumber):
-        score = 0
 
+    def getScore(self, i):
+        return self.population[i].getScore()
+
+    def getScoreAverage(self):
+        avg_score = 0
         for animal in self.population:
-            score += animal.getScore()
+            avg_score += animal.getScore()
+        return avg_score
+
+    def completeScoreGeneration(self, generationNumber):
+        avg_score = self.getScoreAverage()
         
         file1 = open("score_generation.txt", "a")
 
-        line = str(generationNumber) + " " + str(score/10) + "\n"
+        line = str(generationNumber) + " " + str(avg_score/10) + "\n"
         file1.write(line)
         
