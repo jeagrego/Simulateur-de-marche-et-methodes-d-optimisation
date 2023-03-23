@@ -1,9 +1,11 @@
 import pymunk
+from time import *
+from constantes import *
 from abc import abstractmethod
 
 class Animal:
-    
-    def __init__(self, footNumber, weight, w_body, h_body, x_cow=150, y_cow=332.75):
+
+    def __init__(self, footNumber, weight, w_body, h_body, x_cow=150, y_cow=350.75):
         self.matrix = None
         self.footNumber = footNumber
         self.weight = weight
@@ -59,6 +61,9 @@ class Animal:
 
     def getPosition(self):
         return self.topBody.position
+
+    def getBodyAndShape(self):
+        return self.bodiesAndShapes
         
     @abstractmethod
     def makeBodyAndShape(self):
@@ -106,7 +111,47 @@ class Cow(Animal):
         self.upperLeg_y = (self.y_cow + (self.h_body / 2)) + self.h_leg / 2
         self.FrontLeg_x = (self.x_cow + (self.w_body / 2)) - ((self.w_body * 0.1) + (self.w_leg / 2))
         self.headBody = None
+        self.time = 0
+        self.diff_x = 0
+        self.interval_time = 0
+        self.x_previous_body = x_cow
+        self.y_previous_body = y_cow
         
+    def getHeadBody(self):
+        return self.headBody
+
+    def getContraints(self):
+        contraint = []
+        contraint.extend(self.joints)
+        contraint.extend(self.smjoints)
+        contraint.extend(self.rljoints)
+        return contraint
+    def setTime(self, time):
+        self.time = time
+
+    def updateTime(self):
+        self.time += time() - self.interval_time
+        self.diff_x += self.x_previous_body - self.topBody.position[0]
+        self.x_previous_body = self.topBody.position[0]
+
+    def isMoving(self):
+        if self.time // 5 == 1:
+            self.time = 0
+            self.interval_time = time()
+            if abs(self.diff_x) < 80:
+                self.diff_x = 0
+                self.time = 0
+                return False
+        return True
+
+    def isNotFalling(self):
+        diff_y = 900 - self.headBody.position[1]
+        if diff_y < 360:
+            print(diff_y)
+            return False
+        if self.headBody.position[0] < 0 or self.headBody.position[0] > width :
+            return False
+        return True
 
     def getTopBodyAndHeadBody(self):
         return self.topBody, self.headBody

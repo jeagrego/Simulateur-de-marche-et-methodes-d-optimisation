@@ -6,6 +6,7 @@ import Environment
 from time import *
 from copy import *
 from constantes import *
+import threading
 
 
 class Display:
@@ -23,6 +24,7 @@ class Display:
         self.individu = 0
         self.generation = 0
         self.new_population = []
+        self.fallenAnimals = []
         self.translation = pymunk.Transform()
         self.i = 0
         self.direction = 1  
@@ -55,14 +57,13 @@ class Display:
         x = 50
         y = 50
         while self.running:
-            print(self.distance)
             self.setDirection()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return 
                 elif event.type == contractMusclesRight:
-                    if not self.display_simulation():
-                        self.distance = 0
+                    self.display_simulation()
+                    self.distance = 0
                     self.i += 2
 
             self.screen.fill(pygame.Color("white"))
@@ -87,46 +88,41 @@ class Display:
             self.clock.tick(self.fps)
            
     def display_simulation(self):
-
         if self.individu == 0:
+            self.individu = 10
             self.i = 0
             self.direction = 1  
             if self.generation != 0:
                 self.new_population = self.model.getNewPopulation()
             else:
+                print("getpop")
                 self.new_population = self.model.getPopulation()
-            self.animal = self.new_population[self.individu]
-            self.individu += 1 
-            self.start_time = time()  
-            self.model.setAnimal(self.animal, self.start_time)
-        
-        self.top, self.head = self.animal.getTopBodyAndHeadBody()
-        isMoving = self.model.isMoving()
-        isNotFalling = self.model.isNotFalling(self.head)
+            self.model.setAnimal(self.new_population)
+            self.fallenAnimals = []
+            print(self.fallenAnimals)
+            print(len(self.new_population))
 
-        if isMoving and isNotFalling:
-            self.start_time = time()
-            self.model.moves(self.direction, self.animal)
-            self.distance = self.top.position[0] - self.model.getPosition()[0]
-            return True
-            
+        for indexAnimal in range(len(self.new_population)):
+            if indexAnimal not in self.fallenAnimals:
+                animal = self.new_population[indexAnimal]
+                self.top, self.head = animal.getTopBodyAndHeadBody()
+                isMoving = animal.isMoving()
+                isNotFalling = animal.isNotFalling()
+                print(animal,indexAnimal)
+                if isMoving and isNotFalling:
+                    self.start_time = time()
+                    self.model.moves(self.direction, animal)
+                    self.distance = self.top.position[0] - animal.getPosition()[0]
+                    animal.updateTime()
 
-        else:
-            self.distance_final = self.top.position[0] - self.model.getPosition()[0]
-            self.animal.setScore(self.distance_final) #TODO revoir le score
-            
-            if self.individu < 10:
-                self.animal = self.new_population[self.individu]
-                self.start_time = time()
-                self.model.setAnimal(self.animal, self.start_time) 
-                self.individu += 1 
-    
-            else:
-                self.individu = 0
-                self.model.sortPopulation()
-                self.model.completeScoreGeneration(self.generation)
-                self.generation += 1 
-        return False
-
-    
-
+                else:
+                    self.distance_final = self.top.position[0] - animal.getPosition()[0]
+                    animal.setScore(self.distance_final) #TODO revoir le score
+                    #print("remove " +str(isMoving) +str(isNotFalling)+str(indexAnimal))
+                    self.model.removeAnimal(animal)
+                    self.fallenAnimals.append(indexAnimal)
+                    if self.individu == 1:
+                        self.model.sortPopulation()
+                        self.model.completeScoreGeneration(self.generation)
+                        self.generation += 1
+                    self.individu -= 1

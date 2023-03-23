@@ -6,12 +6,11 @@ from Genetic import *
 from DifferentialEvolution import *
 from time import *
 from constantes import *
-from copy import *
 
 
 class Model:
 
-    def __init__(self, mutation_prob, footNumber, weight, w_body, h_body, x_animal=150, y_animal=332.75):
+    def __init__(self, mutation_prob, footNumber, weight, w_body, h_body, x_animal=150, y_animal=430.75):
         self.space = pymunk.Space()
         self.environment = Environment(self.space)
         self.genetic = Genetic(footNumber)
@@ -26,9 +25,6 @@ class Model:
         self.x_previous_body = x_animal
         self.y_previous_body = y_animal
         self.mutation_prob = mutation_prob
-        self.time = 0
-        self.diff_x = 0
-        self.interval_time = 0
         self.bestSCore = 0
         self.checkParameters()
 
@@ -44,21 +40,30 @@ class Model:
     def getPosition(self):
         return (self.x_animal, self.y_animal)
 
-    def setAnimal(self, animal, time):
-        """
-            Supprime tous les bodies and shapes dans le parametre space. Et set l'animal et le sol
-        """
-        self.interval_time = time
+    def removeFromSpace(self):
         for body in self.space.bodies:
             self.space.remove(body)
         for shape in self.space.shapes:
             self.space.remove(shape)
-        for constraint in self.space.constraints:
-            self.space.remove(constraint)
-        self.environment.setGround()
-        self.environment.addAnimal(animal)
-        self.x_previous_body = self.x_animal
-        self.y_previous_body = self.y_animal
+        for contraint in self.space.constraints:
+            self.space.remove(contraint)
+    def setAnimal(self, population):
+        """
+            Ajoute toute la population dans l'environment
+        """
+
+        for animal in population:
+            self.environment.addAnimal(animal)
+        print("all animals are added")
+        #self.environment.setGround()
+
+
+    def removeAnimal(self, animal):
+        for body, shape in animal.getBodyAndShape():
+            self.space.remove(body)
+            self.space.remove(shape)
+        for contraint in animal.getContraints():
+            self.space.remove(contraint)
 
     def getPopulation(self):
         return self.population
@@ -101,30 +106,13 @@ class Model:
         new_population = self.genetic.get_new_population(self.population, self.mutation_prob)
         new_population_1 = []
         for i in range(len(new_population)):
+            print(i)
             animal = self.makeAnimal()
             animal.setMatrix(new_population[i])
             new_population_1.append(animal)
         self.addToPopulation(new_population_1)
         return new_population_1
     
-
-    def isMoving(self):
-        if self.time // 5 == 1:
-            self.time = 0
-            self.interval_time = time()
-            if abs(self.diff_x) < 80:
-                self.diff_x = 0
-                self.time = 0
-                return False
-        return True
-
-    def isNotFalling(self, headBody):
-        diff_y = 600 - headBody.position[1]
-        if diff_y < 130:
-            return False
-        if  headBody.position[0] < 0 or headBody.position[0] > width :
-            return False
-        return True
 
     def initPopulation(self):
         for i in range(10):
@@ -134,7 +122,7 @@ class Model:
     def makeAnimal(self):
         if self.footnumber == 4:
             animal = Cow(self.footnumber, self.weight, 
-                        self.w_body, self.h_body, 
+                        self.w_body, self.h_body,
                         self.x_animal, self.y_animal)
             animal.setMatrix(self.makeMatrix()) 
         return animal
@@ -154,10 +142,7 @@ class Model:
         """
             Fait bouger les parties des jambes dependant de la matrice
         """
-        self.time += time() - self.interval_time
         topBody = animal.getTopBodyAndHeadBody()[0]
-        self.diff_x += self.x_previous_body - topBody.position[0]
-        self.x_previous_body = topBody.position[0]
         matrix = animal.getMatrix()
         self.smjoints = animal.getSmjoints()
 
