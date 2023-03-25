@@ -10,7 +10,7 @@ from constantes import *
 
 class Model:
 
-    def __init__(self, mutation_prob, footNumber, weight, w_body, h_body, x_animal=150, y_animal=430.75):
+    def __init__(self, mutation_prob, footNumber, weight, w_body, h_body):
         self.space = pymunk.Space()
         self.environment = Environment(self.space)
         self.genetic = Genetic(footNumber)
@@ -20,25 +20,21 @@ class Model:
         self.weight = weight
         self.w_body = w_body
         self.h_body = h_body
-        self.x_animal = x_animal
-        self.y_animal = y_animal
-        self.x_previous_body = x_animal
-        self.y_previous_body = y_animal
         self.mutation_prob = mutation_prob
         self.bestSCore = 0
+        self.individu = 0
+        self.generation = 0
+        self.fallenAnimals = []
         self.checkParameters()
 
     def checkParameters(self):
         if self.footnumber == 4:
             self.initPopulation()
         else:
-            raise Exception("Error : wrong foot numbers")
+            raise Exception("Error : wrong feet numbers")
 
     def getSpace(self):
         return self.space
-
-    def getPosition(self):
-        return (self.x_animal, self.y_animal)
 
     def removeFromSpace(self):
         for body in self.space.bodies:
@@ -47,15 +43,17 @@ class Model:
             self.space.remove(shape)
         for contraint in self.space.constraints:
             self.space.remove(contraint)
-    def setAnimal(self, population):
+        self.environment.setGround()
+
+    def setAnimal(self):
         """
             Ajoute toute la population dans l'environment
         """
+        """self.space = pymunk.Space()
+        self.environment.setSpace(self.space)"""
 
-        for animal in population:
+        for animal in self.population:
             self.environment.addAnimal(animal)
-        print("all animals are added")
-        #self.environment.setGround()
 
 
     def removeAnimal(self, animal):
@@ -68,7 +66,7 @@ class Model:
     def getPopulation(self):
         return self.population
 
-    def addToPopulation(self, new_population):
+    def setPopulation(self, new_population):
         self.population = new_population
 
     def balanced(self):
@@ -102,18 +100,17 @@ class Model:
             line += "\n"
             file1.write(line)
         
-    def getNewPopulation(self):
+    def makeNewPopulation(self):
         new_population = self.genetic.get_new_population(self.population, self.mutation_prob)
-        new_population_1 = []
+        #print(new_population)
+        self.population = []
         for i in range(len(new_population)):
-            print(i)
-            animal = self.makeAnimal()
+            animal = Cow(self.footnumber, self.weight, 
+                        self.w_body, self.h_body)
             animal.setMatrix(new_population[i])
-            new_population_1.append(animal)
-        self.addToPopulation(new_population_1)
-        return new_population_1
-    
+            self.population.append(animal)
 
+    
     def initPopulation(self):
         for i in range(10):
             animal = self.makeAnimal()
@@ -122,14 +119,14 @@ class Model:
     def makeAnimal(self):
         if self.footnumber == 4:
             animal = Cow(self.footnumber, self.weight, 
-                        self.w_body, self.h_body,
-                        self.x_animal, self.y_animal)
-            animal.setMatrix(self.makeMatrix()) 
+                        self.w_body, self.h_body)
+            matrix = self.makeMatrix()
+            animal.setMatrix(matrix) 
         return animal
 
     def makeMatrix(self):
         """
-            Crée une matrice pour les 2 premiers parents
+            Crée une matrice pour les individus de premiere generation 
         """
         matrix = []
         y = self.footnumber*2
@@ -188,4 +185,43 @@ class Model:
 
         line = str(generationNumber) + " " + str(avg_score/10) + "\n"
         file1.write(line)
-        
+
+    
+    def run_simulation(self, direction):
+        if self.individu == 0:
+            self.individu = 10
+            self.i = 0
+            self.direction = 1  
+            if self.generation != 0:
+                self.makeNewPopulation()
+            self.setAnimal()
+            self.fallenAnimals = []
+            
+
+        for indexAnimal in range(len(self.population)):
+            if indexAnimal not in self.fallenAnimals:
+                animal = self.population[indexAnimal]
+                self.top, self.head = animal.getTopBodyAndHeadBody()
+                isMoving = animal.isMoving()
+                isNotFalling = animal.isNotFalling()
+                
+                if isMoving and isNotFalling:
+                    self.start_time = time()
+                    self.moves(direction, animal)
+                    self.distance = self.top.position[0] - animal.getPosition()[0]
+                    animal.updateTime()
+
+                else:
+                    
+                    self.distance_final = self.top.position[0] - animal.getPosition()[0]
+                    animal.setScore(self.distance_final) #TODO revoir le score
+                    self.removeAnimal(animal)
+                    self.fallenAnimals.append(indexAnimal)
+
+                    if self.individu == 1:
+                        self.sortPopulation()
+                        self.completeScoreGeneration(self.generation)
+                        self.generation += 1
+                    self.individu -= 1
+
+        return self.generation, self.individu

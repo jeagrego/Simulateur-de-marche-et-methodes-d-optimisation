@@ -5,7 +5,7 @@ from abc import abstractmethod
 
 class Animal:
 
-    def __init__(self, footNumber, weight, w_body, h_body, x_cow=150, y_cow=350.75):
+    def __init__(self, footNumber, weight, w_body, h_body, x_cow=150, y_cow=430.75):
         self.matrix = None
         self.footNumber = footNumber
         self.weight = weight
@@ -64,6 +64,7 @@ class Animal:
 
     def getBodyAndShape(self):
         return self.bodiesAndShapes
+    
         
     @abstractmethod
     def makeBodyAndShape(self):
@@ -101,8 +102,8 @@ class Autruche(Animal):
  
 class Cow(Animal):
 
-    def __init__(self, footNumber, weight, x_cow, y_cow, w_body, h_body):
-        super().__init__(footNumber, weight, x_cow, y_cow, w_body, h_body)
+    def __init__(self, footNumber, weight, w_body, h_body, x_cow=150, y_cow=430.75):
+        super().__init__(footNumber, weight, w_body, h_body, x_cow=150, y_cow=430.75)
 
         self.leg_weight = weight * 0.05  # 8 leg members
         self.head_weight = weight*0.1
@@ -126,6 +127,7 @@ class Cow(Animal):
         contraint.extend(self.smjoints)
         contraint.extend(self.rljoints)
         return contraint
+    
     def setTime(self, time):
         self.time = time
 
@@ -147,9 +149,10 @@ class Cow(Animal):
     def isNotFalling(self):
         diff_y = 900 - self.headBody.position[1]
         if diff_y < 360:
-            print(diff_y)
             return False
         if self.headBody.position[0] < 0 or self.headBody.position[0] > width :
+            return False
+        if self.topBody.position[1] > 600:
             return False
         return True
 

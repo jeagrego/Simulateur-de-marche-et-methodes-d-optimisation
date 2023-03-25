@@ -21,16 +21,12 @@ class Display:
         self.font = pygame.font.SysFont("Arial", 16)
         self.fps = 60
         self.dt = 1.0 / self.fps
-        self.individu = 0
         self.generation = 0
-        self.new_population = []
-        self.fallenAnimals = []
-        self.translation = pymunk.Transform()
         self.i = 0
         self.direction = 1  
         self.distance = 0 
+        self.individu = 0
         pygame.display.set_caption("Simulation de marche")
-        self.translate_speed = 1000
         self.top = pymunk.Body()
 
     def setDirection(self):
@@ -62,8 +58,7 @@ class Display:
                 if event.type == pygame.QUIT:
                     return 
                 elif event.type == contractMusclesRight:
-                    self.display_simulation()
-                    self.distance = 0
+                    self.generation, self.individu = self.model.run_simulation(self.direction)
                     self.i += 2
 
             self.screen.fill(pygame.Color("white"))
@@ -87,7 +82,7 @@ class Display:
             self.space.step(self.dt)
             self.clock.tick(self.fps)
            
-    def display_simulation(self):
+    """def display_simulation(self):
         if self.individu == 0:
             self.individu = 10
             self.i = 0
@@ -95,12 +90,10 @@ class Display:
             if self.generation != 0:
                 self.new_population = self.model.getNewPopulation()
             else:
-                print("getpop")
                 self.new_population = self.model.getPopulation()
             self.model.setAnimal(self.new_population)
             self.fallenAnimals = []
-            print(self.fallenAnimals)
-            print(len(self.new_population))
+            
 
         for indexAnimal in range(len(self.new_population)):
             if indexAnimal not in self.fallenAnimals:
@@ -108,21 +101,22 @@ class Display:
                 self.top, self.head = animal.getTopBodyAndHeadBody()
                 isMoving = animal.isMoving()
                 isNotFalling = animal.isNotFalling()
-                print(animal,indexAnimal)
+                
                 if isMoving and isNotFalling:
                     self.start_time = time()
                     self.model.moves(self.direction, animal)
                     self.distance = self.top.position[0] - animal.getPosition()[0]
-                    animal.updateTime()
+                    #animal.updateTime()
 
                 else:
+                    print(self.generation, animal)
                     self.distance_final = self.top.position[0] - animal.getPosition()[0]
                     animal.setScore(self.distance_final) #TODO revoir le score
-                    #print("remove " +str(isMoving) +str(isNotFalling)+str(indexAnimal))
                     self.model.removeAnimal(animal)
                     self.fallenAnimals.append(indexAnimal)
+
                     if self.individu == 1:
                         self.model.sortPopulation()
                         self.model.completeScoreGeneration(self.generation)
                         self.generation += 1
-                    self.individu -= 1
+                    self.individu -= 1"""
