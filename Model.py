@@ -25,6 +25,7 @@ class Model:
         self.individu = 0
         self.generation = 0
         self.fallenAnimals = []
+        self.distance_final = 0
         self.checkParameters()
 
     def checkParameters(self):
@@ -102,7 +103,6 @@ class Model:
         
     def makeNewPopulation(self):
         new_population = self.genetic.get_new_population(self.population, self.mutation_prob)
-        #print(new_population)
         self.population = []
         for i in range(len(new_population)):
             animal = Cow(self.footnumber, self.weight, 
@@ -208,12 +208,11 @@ class Model:
                 if isMoving and isNotFalling:
                     self.start_time = time()
                     self.moves(direction, animal)
-                    self.distance = self.top.position[0] - animal.getPosition()[0]
+                    #self.distance = self.top.position[0] - animal.getPosition()[0]
                     animal.updateTime()
 
                 else:
-                    
-                    self.distance_final = self.top.position[0] - animal.getPosition()[0]
+                    self.distance_final = self.top.position[0] - animal.getInitPos()[0]
                     animal.setScore(self.distance_final) #TODO revoir le score
                     self.removeAnimal(animal)
                     self.fallenAnimals.append(indexAnimal)

@@ -117,9 +117,14 @@ class Cow(Animal):
         self.interval_time = 0
         self.x_previous_body = x_cow
         self.y_previous_body = y_cow
+        self.x_cow = x_cow
+        self.y_cow = y_cow
         
     def getHeadBody(self):
         return self.headBody
+    
+    def getInitPos(self):
+        return self.x_cow, self.y_cow
 
     def getContraints(self):
         contraint = []
@@ -152,7 +157,7 @@ class Cow(Animal):
             return False
         if self.headBody.position[0] < 0 or self.headBody.position[0] > width :
             return False
-        if self.topBody.position[1] > 600:
+        if self.topBody.position[1] + self.w_body/2 > 890:
             return False
         return True
 

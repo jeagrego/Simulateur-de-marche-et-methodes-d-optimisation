@@ -53,10 +53,10 @@ class Genetic:
 
         parent_1 = population[random.randint(0, index)]
         parent_2 = population[-1]
-        print("random parent 1 :")
+        """print("random parent 1 :")
         print(parent_1)
         print("random parent 2 :")
-        print(parent_2)
+        print(parent_2)"""
         return parent_1, parent_2
 
     def get_not_random_parents(self, population):
