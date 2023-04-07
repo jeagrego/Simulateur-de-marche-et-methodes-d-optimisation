@@ -18,9 +18,10 @@ class Genetic:
         index = random.randrange(1, len(parent_1[0]))
         child_1 = ([],0)
         for i in range(len(parent_1[0])):
-            moyen = (parent_1[0][i][1] + parent_2[0][i][1])/2
             line = []
-            line.append(i)
+            moyen = (parent_1[0][i][1] + parent_2[0][i][1])/2
+            legIndex = random.choice([parent_1[0][i][0], parent_2[0][i][0]])
+            line.append(legIndex)
             line.append(moyen)
             child_1[0].append(line)
         #child_1 = (parent_1[0][:index] + parent_2[0][index:], parent_1[1])
@@ -90,7 +91,7 @@ class Genetic:
         population_2 = []
         population_size = len(population)
         for i in range(population_size):
-            parent_1, parent_2 = self.get_random_parents(population) #changed to get_random_parent
+            parent_1, parent_2 = self.get_not_random_parents(population) #changed to get_random_parent
             child = self.crossover((parent_1.getMatrix(), parent_1.getScore()), (parent_2.getMatrix(), parent_2.getScore()))[0]
             
             if random.uniform(0, 1) <= mutation_prob:

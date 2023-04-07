@@ -142,13 +142,15 @@ class Cow(Animal):
         self.x_previous_body = self.topBody.position[0]
 
     def isMoving(self):
-        if self.time // 5 == 1:
+        """if self.time // 5 == 1:
             self.time = 0
             self.interval_time = time()
             if abs(self.diff_x) < 80:
                 self.diff_x = 0
                 self.time = 0
-                return False
+                return False"""
+        if self.topBody.velocity[0] < 0:
+            return False
         return True
 
     def isNotFalling(self):

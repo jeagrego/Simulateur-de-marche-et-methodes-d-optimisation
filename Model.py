@@ -37,6 +37,14 @@ class Model:
     def getSpace(self):
         return self.space
 
+    def getBestSCore(self):
+        bestScore = 0
+        for individu in self.population:
+            score = individu.getScore()
+            if individu.getScore() > bestScore:
+                bestScore = score
+        return bestScore
+
     def removeFromSpace(self):
         for body in self.space.bodies:
             self.space.remove(body)
@@ -131,7 +139,7 @@ class Model:
         matrix = []
         y = self.footnumber*2
         for i in range(y):
-            x = [i, random.uniform(-5.0, 5.0)]
+            x = [random.randint(0,7), random.uniform(-5.0, 5.0)]
             matrix.append(x)
         return matrix
 
@@ -212,8 +220,6 @@ class Model:
                     animal.updateTime()
 
                 else:
-                    self.distance_final = self.top.position[0] - animal.getInitPos()[0]
-                    animal.setScore(self.distance_final) #TODO revoir le score
                     self.removeAnimal(animal)
                     self.fallenAnimals.append(indexAnimal)
 
@@ -222,5 +228,7 @@ class Model:
                         self.completeScoreGeneration(self.generation)
                         self.generation += 1
                     self.individu -= 1
+                self.distance_final = self.top.position[0] - animal.getInitPos()[0]
+                animal.setScore(self.distance_final) #TODO revoir le score
 
         return self.generation, self.individu

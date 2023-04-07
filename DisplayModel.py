@@ -26,6 +26,7 @@ class Display:
         self.direction = 1  
         self.distance = 0 
         self.individu = 0
+        self.score = 0
         pygame.display.set_caption("Simulation de marche")
         self.top = pymunk.Body()
 
@@ -59,6 +60,7 @@ class Display:
                     return 
                 elif event.type == contractMusclesRight:
                     self.generation, self.individu = self.model.run_simulation(self.direction)
+                    self.score = self.model.getBestSCore()
                     self.i += 2
 
             self.screen.fill(pygame.Color("white"))
@@ -75,7 +77,7 @@ class Display:
             #end back button
             self.space.debug_draw(draw_options)
             # Info and flip screen
-            self.screen.blit(self.font.render("generation :" + str(self.generation) + " individu: " + str(self.individu) + " Score: " + str(self.distance)
+            self.screen.blit(self.font.render("generation :" + str(self.generation) + " individu: " + str(self.individu) + " Best Score: " + str(self.score)
                                               , True, pygame.Color("black")), (0, 0))
             self.screen.blit(grass, (0, 560))
             pygame.display.flip()
