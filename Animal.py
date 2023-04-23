@@ -141,7 +141,7 @@ class Cow(Animal):
         self.diff_x += self.x_previous_body - self.topBody.position[0]
         self.x_previous_body = self.topBody.position[0]
 
-    def isMoving(self):
+    def isMoving(self, time):
         """if self.time // 5 == 1:
             self.time = 0
             self.interval_time = time()
@@ -149,18 +149,19 @@ class Cow(Animal):
                 self.diff_x = 0
                 self.time = 0
                 return False"""
-        if self.topBody.velocity[0] < 0:
+        if self.topBody.velocity[0] < 0 and time > 2:
             return False
         return True
 
-    def isNotFalling(self):
+    def isNotFalling(self, time):
         diff_y = 900 - self.headBody.position[1]
-        if diff_y < 360:
-            return False
-        if self.headBody.position[0] < 0 or self.headBody.position[0] > width :
-            return False
-        if self.topBody.position[1] + self.w_body/2 > 890:
-            return False
+        if time > 2:
+            if diff_y < 360:
+                return False
+            if self.headBody.position[0] < 0 or self.headBody.position[0] > width :
+                return False
+            if self.topBody.position[1] + self.w_body/2 > 890:
+                return False
         return True
 
     def getTopBodyAndHeadBody(self):

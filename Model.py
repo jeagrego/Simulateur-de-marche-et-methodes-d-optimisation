@@ -26,6 +26,7 @@ class Model:
         self.generation = 0
         self.fallenAnimals = []
         self.distance_final = 0
+        self.timer = 0
         self.checkParameters()
 
     def checkParameters(self):
@@ -204,14 +205,15 @@ class Model:
                 self.makeNewPopulation()
             self.setAnimal()
             self.fallenAnimals = []
-            
+            self.setNewTimer()
 
         for indexAnimal in range(len(self.population)):
             if indexAnimal not in self.fallenAnimals:
+                time_gap = time() - self.timer
                 animal = self.population[indexAnimal]
                 self.top, self.head = animal.getTopBodyAndHeadBody()
-                isMoving = animal.isMoving()
-                isNotFalling = animal.isNotFalling()
+                isMoving = animal.isMoving(time_gap)
+                isNotFalling = animal.isNotFalling(time_gap)
                 
                 if isMoving and isNotFalling:
                     self.start_time = time()
@@ -228,7 +230,12 @@ class Model:
                         self.completeScoreGeneration(self.generation)
                         self.generation += 1
                     self.individu -= 1
-                self.distance_final = self.top.position[0] - animal.getInitPos()[0]
-                animal.setScore(self.distance_final) #TODO revoir le score
+                distance = (self.top.position[0] - animal.getInitPos()[0])
+                individu_timer = time() - self.timer
+                score = distance + ((1/individu_timer)*100)
+                animal.setScore(score) #TODO revoir le score
 
         return self.generation, self.individu
+    
+    def setNewTimer(self):
+        self.timer = time()
