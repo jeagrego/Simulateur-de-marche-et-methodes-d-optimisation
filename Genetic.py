@@ -17,10 +17,18 @@ class Genetic:
         child_1 = ([], 0)
         for i in range(len(parent_1[0])):
             line = []
-            average = (parent_1[0][i][1] + parent_2[0][i][1]) / 2
+            average_rotation = (parent_1[0][i][1] + parent_2[0][i][1]) / 2
             legIndex = random.choice([parent_1[0][i][0], parent_2[0][i][0]])
+            rotation_direction_1 = random.choice([parent_1[0][i][2], parent_2[0][i][2]])
+            rotation_direction_2 = random.choice([parent_1[0][i][3], parent_2[0][i][3]])
+            rotation_direction_3 = random.choice([parent_1[0][i][4], parent_2[0][i][4]])
+            rotation_direction_4 = random.choice([parent_1[0][i][5], parent_2[0][i][5]])
             line.append(legIndex)
-            line.append(average)
+            line.append(average_rotation)
+            line.append(rotation_direction_1)
+            line.append(rotation_direction_2)
+            line.append(rotation_direction_3)
+            line.append(rotation_direction_4)
             child_1[0].append(line)
         # child_1 = (parent_1[0][:index] + parent_2[0][index:], parent_1[1])
         return child_1
@@ -31,10 +39,10 @@ class Genetic:
         """
 
         rotation_index_1 = random.randrange(0, len(self.leg_set) - 1)
-        rotation_index_2 = random.randrange(0, len(self.leg_set) - 1)
+        #rotation_index_2 = random.randrange(0, len(self.leg_set) - 1)
 
         individual[rotation_index_1][1] = self.rotation_set[random.randint(0, len(self.rotation_set) - 1)]
-        individual[rotation_index_2][1] = self.rotation_set[random.randint(0, len(self.rotation_set) - 1)]
+        #individual[rotation_index_2][1] = self.rotation_set[random.randint(0, len(self.rotation_set) - 1)]
 
         return individual
 

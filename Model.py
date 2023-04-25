@@ -136,7 +136,7 @@ class Model:
         matrix = []
         y = self.footnumber * 2
         for i in range(y):
-            x = [random.randint(0, 7), random.uniform(-5.0, 5.0)]
+            x = [random.randint(0, 7), random.uniform(-5.0, 5.0), random.randint(-1, 1), random.randint(-1, 1), random.randint(-1, 1), random.randint(-1, 1)]
             matrix.append(x)
         return matrix
 
@@ -158,21 +158,20 @@ class Model:
 
         if direction == 1:
             for i in range(len(matrix)):
-                if i not in [1, 6]:
-                    self.smjoints[matrix[i][0]].rate = matrix[i][1] * direction_1[i]
+                self.smjoints[matrix[i][0]].rate = matrix[i][1] * matrix[i][2]
 
         elif direction == 2:
             for i in range(len(matrix)):
-                self.smjoints[matrix[i][0]].rate = matrix[i][1] * direction_2[i]
+                self.smjoints[matrix[i][0]].rate = matrix[i][1] * matrix[i][3]
 
         elif direction == -1:
             for i in range(len(matrix)):
                 if i not in [1, 6]:
-                    self.smjoints[matrix[i][0]].rate = matrix[i][1] * direction_3[i]
+                    self.smjoints[matrix[i][0]].rate = matrix[i][1] * matrix[i][4]
 
         elif direction == -2:
             for i in range(len(matrix)):
-                self.smjoints[matrix[i][0]].rate = matrix[i][1] * direction_4[i]
+                self.smjoints[matrix[i][0]].rate = matrix[i][1] * matrix[i][5]
 
     def getScore(self, i):
         return self.population[i].getScore()
@@ -185,9 +184,7 @@ class Model:
 
     def completeScoreGeneration(self, generationNumber):
         avg_score = self.getScoreAverage()
-
         file1 = open("score_generation.txt", "a")
-
         line = str(generationNumber) + " " + str(avg_score / 3) + "\n"
         file1.write(line)
 
@@ -205,7 +202,6 @@ class Model:
         for indexAnimal in range(len(self.population)):
             if indexAnimal not in self.fallenAnimals:
                 time_gap = time() - self.timer
-                print(time_gap)
                 animal = self.population[indexAnimal]
                 self.top, self.head = animal.getTopBodyAndHeadBody()
                 isMoving = animal.isMoving(time_gap)
