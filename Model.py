@@ -205,6 +205,7 @@ class Model:
         for indexAnimal in range(len(self.population)):
             if indexAnimal not in self.fallenAnimals:
                 time_gap = time() - self.timer
+                print(time_gap)
                 animal = self.population[indexAnimal]
                 self.top, self.head = animal.getTopBodyAndHeadBody()
                 isMoving = animal.isMoving(time_gap)

@@ -149,7 +149,7 @@ class Cow(Animal):
                 self.diff_x = 0
                 self.time = 0
                 return False"""
-        if self.topBody.velocity[0] < 0 and time > 2:
+        if self.topBody.velocity[0] < 0 and time > 4:
             return False
         return True
 
