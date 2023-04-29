@@ -36,7 +36,7 @@ class Model:
     def getSpace(self):
         return self.space
 
-    def getBestSCore(self):
+    def getBestScore(self):
         bestScore = 0
         for individu in self.population:
             score = individu.getScore()
@@ -130,8 +130,19 @@ class Model:
         return animal
 
     def makeMatrix(self):
-        """
-            Crée une matrice pour les individus de premiere generation 
+        """ Crée une matrice des paramètres utilisés pour faire marcher un animal pour les individus de premiere
+        generation. Il y a 6 paramètres.
+            Les paramètres de la matrice représentent:
+        - L'index de la partie de la jambe à bouger
+        - La vitesse moyenne de rotation du genou
+        - La direction de la rotation du genou  (jambe arriére axe x)
+        - La direction de la rotation de la hanche (jambe arrière axe x)
+        - La direction de la rotation du genou  (jambe avant axe x)
+        - La direction de la rotation de la hanche (jambe avant axe x)
+
+            :return: la matrice des 6 paramètres initialisés à des valeurs aléatoires pour les jambes au premier plan et
+            en arrière plan
+            :rtype: list(list(int or float), list(int or float))
         """
         matrix = []
         y = self.footnumber * 2

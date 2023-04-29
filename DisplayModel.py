@@ -60,7 +60,7 @@ class Display:
                     return 
                 elif event.type == contractMusclesRight:
                     self.generation, self.individu = self.model.run_simulation(self.direction)
-                    self.score = self.model.getBestSCore()
+                    self.score = self.model.getBestScore()
                     self.i += 2
 
             self.screen.fill(pygame.Color("white"))

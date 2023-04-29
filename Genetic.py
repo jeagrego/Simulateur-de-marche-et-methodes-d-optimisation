@@ -2,36 +2,49 @@ import random
 
 
 class Genetic:
-    def __init__(self, footNumber):
-        self.leg_set = [i for i in range((footNumber * 2) - 1)]
+    def __init__(self, foot_number):
+        self.leg_set = [i for i in range((foot_number * 2) - 1)]
         self.rotation_set = [random.uniform(-5, 5) for i in range(100)]
-        self.footNumber = footNumber
+        self.footNumber = foot_number
 
-    def crossover(self, parent_1, parent_2):
+    def crossover(self, parent1, parent2):
+        """Crée un nouvel individu en combinant les chaînes des parents. Le point de coupure est choisi aléatoirement.
+
+        :param parent1: Tuple contenant la matrice des parametres du parent 1 ainsi que le score obtenu par le parent 1.
+        :type parent1: tuple(list, float)
+
+        :param parent2: Tuple contenant la matrice des parametres du parent 2 ainsi que le score obtenu par le parent 2.
+        :type parent2: tuple(list, float)
+
+        :return: le tuple(matrice, score) du nouvel animal créé à partir des deux parents. Son score est initialisé à 0.
+        :rtype: tuple(list, int)
         """
-        Crée un nouvel individu en combinant les chaînes des parents. Le point de coupure est choisi aléatoirement
-        """
-        if len(parent_1[0]) <= 1:
-            return parent_1
-        # index = random.randrange(1, len(parent_1[0]))
-        child_1 = ([], 0)
-        for i in range(len(parent_1[0])):
-            line = []
-            average_rotation = (parent_1[0][i][1] + parent_2[0][i][1]) / 2
-            legIndex = random.choice([parent_1[0][i][0], parent_2[0][i][0]])
-            rotation_direction_1 = random.choice([parent_1[0][i][2], parent_2[0][i][2]])
-            rotation_direction_2 = random.choice([parent_1[0][i][3], parent_2[0][i][3]])
-            rotation_direction_3 = random.choice([parent_1[0][i][4], parent_2[0][i][4]])
-            rotation_direction_4 = random.choice([parent_1[0][i][5], parent_2[0][i][5]])
-            line.append(legIndex)
-            line.append(average_rotation)
-            line.append(rotation_direction_1)
-            line.append(rotation_direction_2)
-            line.append(rotation_direction_3)
-            line.append(rotation_direction_4)
-            child_1[0].append(line)
-        # child_1 = (parent_1[0][:index] + parent_2[0][index:], parent_1[1])
-        return child_1
+        matrice_p1 = parent1[0]
+        matrice_p2 = parent2[0]
+        score_p1 = parent1[1]
+        score_p2 = parent2[1]
+        num_params = len(matrice_p1)
+        if num_params <= 1:
+            return parent1
+        # index = random.randrange(1, len(matrice_p1))
+        child = ([], 0)  # The child parameters become the parameter matrix
+        for i in range(num_params):
+            params_c = []  # The child parameters used to create the matrix
+            leg_index = random.choice([matrice_p1[i][0], matrice_p2[i][0]])
+            average_rotation = (matrice_p1[i][1] + matrice_p2[i][1]) / 2
+            rotation_direction_1 = random.choice([matrice_p1[i][2], matrice_p2[i][2]])
+            rotation_direction_2 = random.choice([matrice_p1[i][3], matrice_p2[i][3]])
+            rotation_direction_3 = random.choice([matrice_p1[i][4], matrice_p2[i][4]])
+            rotation_direction_4 = random.choice([matrice_p1[i][5], matrice_p2[i][5]])
+            params_c.append(leg_index)
+            params_c.append(average_rotation)
+            params_c.append(rotation_direction_1)
+            params_c.append(rotation_direction_2)
+            params_c.append(rotation_direction_3)
+            params_c.append(rotation_direction_4)
+            child[0].append(params_c)
+        # child = (matrice_p1[:index] + matrice_p2[index:], score_p1)
+        return child
 
     def mutate(self, individual):
         """
@@ -39,10 +52,10 @@ class Genetic:
         """
 
         rotation_index_1 = random.randrange(0, len(self.leg_set) - 1)
-        #rotation_index_2 = random.randrange(0, len(self.leg_set) - 1)
+        # rotation_index_2 = random.randrange(0, len(self.leg_set) - 1)
 
         individual[rotation_index_1][1] = self.rotation_set[random.randint(0, len(self.rotation_set) - 1)]
-        #individual[rotation_index_2][1] = self.rotation_set[random.randint(0, len(self.rotation_set) - 1)]
+        # individual[rotation_index_2][1] = self.rotation_set[random.randint(0, len(self.rotation_set) - 1)]
 
         return individual
 
@@ -52,10 +65,10 @@ class Genetic:
     # if len(population) == 2:
     # return population[0], population[1]
 
-    # parent_1 = population[random.randint(0, index)]
-    # parent_2 = population[-1]
+    # parent1 = population[random.randint(0, index)]
+    # parent2 = population[-1]
 
-    # return parent_1, parent_2
+    # return parent1, parent2
 
     def get_not_random_parents(self, population):
         # calculer la somme totale des scores
@@ -69,7 +82,7 @@ class Genetic:
         for indiv in population:
             cum_score += indiv.getScore()
             if cum_score >= random_num:
-                parent_1 = indiv
+                parent1 = indiv
                 break
 
         # répéter les étapes 2 à 4 pour sélectionner le deuxième parent
@@ -78,19 +91,19 @@ class Genetic:
         for indiv in population:
             cum_score += indiv.getScore()
             if cum_score >= random_num:
-                parent_2 = indiv
+                parent2 = indiv
                 break
 
-        return parent_1, parent_2
+        return parent1, parent2
 
     def get_new_population(self, population, mutation_prob):
         population_2 = []
         population_size = len(population)
         for i in range(population_size):
-            parent_1, parent_2 = self.get_not_random_parents(population)  # changed to get_random_parent
+            parent1, parent2 = self.get_not_random_parents(population)  # changed to get_random_parent
             child = \
-                self.crossover((parent_1.getMatrix(), parent_1.getScore()),
-                               (parent_2.getMatrix(), parent_2.getScore()))[0]
+                self.crossover((parent1.getMatrix(), parent1.getScore()),
+                               (parent2.getMatrix(), parent2.getScore()))[0]
 
             if random.uniform(0, 1) <= mutation_prob:
                 child = self.mutate(child)
