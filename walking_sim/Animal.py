@@ -209,24 +209,24 @@ class Cow(Animal):
 
    
     def makeshapes(self):
-
+        cowColor = (0,0,0, 0)
         bodyShape = pymunk.Poly.create_box(self.topBody, (self.w_body, self.h_body))
-        bodyShape.color = (142, 68, 173, 255)
+        bodyShape.color = cowColor
         self.bodiesAndShapes.append((self.topBody, bodyShape))
         headShape = pymunk.Poly.create_box(self.headBody, (self.w_body*0.3, self.h_body*0.5))
-        headShape.color = (142, 68, 173, 255)
+        headShape.color = cowColor
         self.bodiesAndShapes.append((self.headBody, headShape))
 
         for leg in self.legBodies:
             for body in leg:
                 legShape = pymunk.Poly.create_box(body, (self.w_leg, self.h_leg))
-                legShape.color = (142, 68, 173, 255)
+                legShape.color = cowColor
                 self.bodiesAndShapes.append((body, legShape))
 
         for foot in self.footBodies:
             for body in foot:
                 footShape = pymunk.Poly.create_box(body, (self.w_hoof, self.h_hoof))
-                footShape.color = (142, 68, 173, 255)
+                footShape.color = cowColor
                 footShape.friction = 0.5
                 self.bodiesAndShapes.append((body, footShape))
     
@@ -288,6 +288,11 @@ class Cow(Animal):
             self.joints.extend((joint1, joint2, joint3, joint4))
             self.smjoints.extend((smjoint1, smjoint2))
             self.rljoints.extend((rljoint1, rljoint2, rljoint3, rljoint4))
+        self.makeJointsInvisible()
+
+    def makeJointsInvisible(self):
+        for joint in self.joints:
+            joint.visible = False
 
     
     def getLegsPositions(self):

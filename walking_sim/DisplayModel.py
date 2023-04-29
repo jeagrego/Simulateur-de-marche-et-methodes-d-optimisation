@@ -16,6 +16,7 @@ class Display:
         self.model = model
         self.space = model.getSpace()
         self.screen = pygame.display.set_mode((width, height))
+        self.draw_options = pymunk.pygame_util.DrawOptions(self.screen)
         self.clock = pygame.time.Clock()
         self.running = True
         self.font = pygame.font.SysFont("Arial", 16)
@@ -42,7 +43,6 @@ class Display:
             self.direction = 1  
 
     def show(self):
-        draw_options = pymunk.pygame_util.DrawOptions(self.screen)
         contractMusclesRight = pygame.USEREVENT + 1
         timeToMove = 500
         pygame.time.set_timer(contractMusclesRight, timeToMove, 160000000)
@@ -75,7 +75,7 @@ class Display:
                     return
                 self.screen.blit(back_button_active, (x, y))
             #end back button
-            self.space.debug_draw(draw_options)
+            self.space.debug_draw(self.draw_options)
             # Info and flip screen
             self.screen.blit(self.font.render("generation :" + str(self.generation) + " individu: " + str(self.individu) + " Best Score: " + str(self.score)
                                               , True, pygame.Color("black")), (0, 0))
