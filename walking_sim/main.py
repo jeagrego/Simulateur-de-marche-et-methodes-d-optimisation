@@ -1,7 +1,5 @@
-
 import sys
 import Menu
-
 
 if __name__ == "__main__":
     "model = Model.Model(4, 100, 200, 100)"

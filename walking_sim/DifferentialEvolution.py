@@ -1,8 +1,9 @@
 import numpy as np
 
+
 class DifferentialEvolution:
     def __init__(self, population, mut=0.8, cr=0.7, tol=1e-6):
-        #instead of obj func use score of each individual of population
+        # instead of obj func use score of each individual of population
         self.population = population
         self.bounds = [np.random.uniform(-5, 5) for i in range(100)]
         self.mut = mut
@@ -15,14 +16,15 @@ class DifferentialEvolution:
 
     def optimize(self):
         # Initialize population randomly within the bounds
-        pop = np.random.rand(len(self.population), len(self.bounds)) * (self.bounds[:, 1] - self.bounds[:, 0]) + self.bounds[:,0]
+        pop = np.random.rand(len(self.population), len(self.bounds)) * (
+                    self.bounds[:, 1] - self.bounds[:, 0]) + self.bounds[:, 0]
 
         # Create new population by mutation and crossover
         mutant_pop = self.mutate(pop)
         cross_pop = self.crossover(pop, mutant_pop)
 
         # Evaluate the objective function for the new population
-        fitness = np.array([self.population[ind].getScore() for ind in cross_pop]) #self.population(i).getScore()
+        fitness = np.array([self.population[ind].getScore() for ind in cross_pop])  # self.population(i).getScore()
 
         # Select the best individuals for the next generation
         idx = np.argsort(fitness)
@@ -54,4 +56,3 @@ class DifferentialEvolution:
                     cross_pop[i, j] = pop[i, j]
         cross_pop = np.clip(cross_pop, self.bounds[:, 0], self.bounds[:, 1])
         return cross_pop
-

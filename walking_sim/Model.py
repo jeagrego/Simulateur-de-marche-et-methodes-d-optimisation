@@ -1,9 +1,9 @@
 import pymunk.pygame_util
 
-from Animal import *
-from DifferentialEvolution import *
-from Environment import Environment
-from Genetic import *
+from walking_sim.Animal import *
+from walking_sim.DifferentialEvolution import *
+from walking_sim.Environment import Environment
+from walking_sim.Genetic import *
 
 
 class Model:
@@ -98,7 +98,7 @@ class Model:
         score = animal.getScore()
         matrice = animal.getMatrix()
 
-        file1 = open("best_individu.txt", "w")
+        file1 = open("../txt/best_individu.txt", "w")
         file1.write(str(score) + "\n")
         for i in range(self.footnumber * 2):
             line = ""
@@ -195,7 +195,7 @@ class Model:
 
     def completeScoreGeneration(self, generationNumber):
         avg_score = self.getScoreAverage()
-        file1 = open("score_generation.txt", "a")
+        file1 = open("../txt/score_generation.txt", "a")
         line = str(generationNumber) + " " + str(avg_score / 3) + "\n"
         file1.write(line)
 
