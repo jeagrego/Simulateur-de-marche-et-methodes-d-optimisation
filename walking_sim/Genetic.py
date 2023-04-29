@@ -7,27 +7,24 @@ class Genetic:
         self.rotation_set = [random.uniform(-5, 5) for i in range(100)]
         self.footNumber = foot_number
 
-    def crossover(self, parent1, parent2):
-        """Crée un nouvel individu en combinant les chaînes des parents. Le point de coupure est choisi aléatoirement.
+    def crossover(self, matrice_p1, matrice_p2):
+        """Crée un nouvel individu en combinant les génes des parents. Le génome est représenté ici par une matrice.
+        La combinaison des genes, pour un gene donné, prend une valeure aléatoire dans l'intervalle réel des 2 parents.
 
-        :param parent1: Tuple contenant la matrice des parametres du parent 1 ainsi que le score obtenu par le parent 1.
-        :type parent1: tuple(list, float)
+        :param matrice_p1: La liste la matrice des parametres du parent 2.
+        :type matrice_p1: list
 
-        :param parent2: Tuple contenant la matrice des parametres du parent 2 ainsi que le score obtenu par le parent 2.
-        :type parent2: tuple(list, float)
+        :param matrice_p2: La liste la matrice des parametres du parent 2.
+        :type matrice_p2: list
 
-        :return: le tuple(matrice, score) du nouvel animal créé à partir des deux parents. Son score est initialisé à 0.
-        :rtype: tuple(list, int)
+        :return: La liste de la matrice du nouvel animal créé à partir des deux parents.
+        :rtype: list
         """
-        matrice_p1 = parent1[0]
-        matrice_p2 = parent2[0]
-        score_p1 = parent1[1]
-        score_p2 = parent2[1]
         num_params = len(matrice_p1)
         if num_params <= 1:
-            return parent1
+            return matrice_p1
         # index = random.randrange(1, len(matrice_p1))
-        child = ([], 0)  # The child parameters become the parameter matrix
+        child = []  # The child parameters become the parameter matrix
         for i in range(num_params):
             params_c = []  # The child parameters used to create the matrix
             leg_index = random.choice([matrice_p1[i][0], matrice_p2[i][0]])
@@ -42,8 +39,9 @@ class Genetic:
             params_c.append(rotation_direction_2)
             params_c.append(rotation_direction_3)
             params_c.append(rotation_direction_4)
-            child[0].append(params_c)
+            child.append(params_c)
         # child = (matrice_p1[:index] + matrice_p2[index:], score_p1)
+        print(child)
         return child
 
     def mutate(self, individual):
@@ -101,9 +99,7 @@ class Genetic:
         population_size = len(population)
         for i in range(population_size):
             parent1, parent2 = self.get_not_random_parents(population)  # changed to get_random_parent
-            child = \
-                self.crossover((parent1.getMatrix(), parent1.getScore()),
-                               (parent2.getMatrix(), parent2.getScore()))[0]
+            child = self.crossover(parent1.getMatrix(), parent2.getMatrix())
 
             if random.uniform(0, 1) <= mutation_prob:
                 child = self.mutate(child)
