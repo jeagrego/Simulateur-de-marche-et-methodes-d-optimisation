@@ -1,1 +1,1 @@
-width, height = 1350, 670
+width, height = 1500, 1000

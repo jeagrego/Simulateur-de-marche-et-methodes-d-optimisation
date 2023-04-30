@@ -4,36 +4,36 @@ import random
 class Genetic:
     def __init__(self, foot_number):
         self.leg_set = [i for i in range((foot_number * 2) - 1)]
-        self.rotation_set = [random.uniform(-5, 5) for i in range(100)]
+        self.rotation_set = [random.uniform(0, 3) for i in range(100)]
         self.footNumber = foot_number
 
-    def crossover(self, matrice_p1, matrice_p2):
+    def crossover(self, matrix_p1, matrix_p2):
         """Crée un nouvel individu en combinant les génes des parents. Le génome est représenté ici par une matrice.
         La combinaison des genes, pour un gene donné, prend une valeure aléatoire dans l'intervalle réel des 2 parents.
 
-        :param matrice_p1: La liste la matrice des parametres du parent 2.
-        :type matrice_p1: list
+        :param matrix_p1: La liste la matrice des parametres du parent 2.
+        :type matrix_p1: list
 
-        :param matrice_p2: La liste la matrice des parametres du parent 2.
-        :type matrice_p2: list
+        :param matrix_p2: La liste la matrice des parametres du parent 2.
+        :type matrix_p2: list
 
         :return: La liste de la matrice du nouvel animal créé à partir des deux parents.
         :rtype: list
         """
-        num_params = len(matrice_p1)
+        num_params = len(matrix_p1)
         if num_params <= 1:
-            return matrice_p1
+            return matrix_p1
         # index = random.randrange(1, len(matrice_p1))
         child = []  # The child parameters become the parameter matrix
-        for i in range(num_params):
+        print(matrix_p1, matrix_p2)
+        for leg_index in range(num_params):
             params_c = []  # The child parameters used to create the matrix
-            leg_index = random.choice([matrice_p1[i][0], matrice_p2[i][0]])
-            average_rotation = (matrice_p1[i][1] + matrice_p2[i][1]) / 2
-            rotation_direction_1 = random.choice([matrice_p1[i][2], matrice_p2[i][2]])
-            rotation_direction_2 = random.choice([matrice_p1[i][3], matrice_p2[i][3]])
-            rotation_direction_3 = random.choice([matrice_p1[i][4], matrice_p2[i][4]])
-            rotation_direction_4 = random.choice([matrice_p1[i][5], matrice_p2[i][5]])
-            params_c.append(leg_index)
+            # leg_index = random.choice([matrice_p1[i][0], matrice_p2[i][0]])
+            average_rotation = (matrix_p1[leg_index][0] + matrix_p2[leg_index][0]) / 2
+            rotation_direction_1 = random.choice([matrix_p1[leg_index][1], matrix_p2[leg_index][1]])
+            rotation_direction_2 = random.choice([matrix_p1[leg_index][2], matrix_p2[leg_index][2]])
+            rotation_direction_3 = random.choice([matrix_p1[leg_index][3], matrix_p2[leg_index][3]])
+            rotation_direction_4 = random.choice([matrix_p1[leg_index][4], matrix_p2[leg_index][4]])
             params_c.append(average_rotation)
             params_c.append(rotation_direction_1)
             params_c.append(rotation_direction_2)
@@ -49,11 +49,11 @@ class Genetic:
         Modifie une chaîne individuelle en remplaçant aléatoirement un caractère par un autre caractère dans gene_set
         """
 
-        rotation_index_1 = random.randrange(0, len(self.leg_set) - 1)
-        # rotation_index_2 = random.randrange(0, len(self.leg_set) - 1)
+        i_leg_part = random.randrange(0, len(self.leg_set) - 1)
+        # i_leg_part_2 = random.randrange(0, len(self.leg_set) - 1)
 
-        individual[rotation_index_1][1] = self.rotation_set[random.randint(0, len(self.rotation_set) - 1)]
-        # individual[rotation_index_2][1] = self.rotation_set[random.randint(0, len(self.rotation_set) - 1)]
+        individual[i_leg_part][0] = self.rotation_set[random.randint(0, len(self.rotation_set) - 1)]
+        # individual[i_leg_part_2][0] = self.rotation_set[random.randint(0, len(self.rotation_set) - 1)]
 
         return individual
 
@@ -77,6 +77,7 @@ class Genetic:
 
         # sélectionner le premier parent
         cum_score = 0
+        parent1 = None
         for indiv in population:
             cum_score += indiv.getScore()
             if cum_score >= random_num:
@@ -86,6 +87,7 @@ class Genetic:
         # répéter les étapes 2 à 4 pour sélectionner le deuxième parent
         random_num = random.uniform(0, total_score)
         cum_score = 0
+        parent2 = None
         for indiv in population:
             cum_score += indiv.getScore()
             if cum_score >= random_num:
@@ -94,11 +96,16 @@ class Genetic:
 
         return parent1, parent2
 
+    def get_best_parents(self, population):
+        print(population[-1].getScore(), population[-2].getScore())
+
+        return population[-1], population[-2]
+
     def get_new_population(self, population, mutation_prob):
         population_2 = []
         population_size = len(population)
         for i in range(population_size):
-            parent1, parent2 = self.get_not_random_parents(population)  # changed to get_random_parent
+            parent1, parent2 = self.get_best_parents(population)  # changed to get_random_parent
             child = self.crossover(parent1.getMatrix(), parent2.getMatrix())
 
             if random.uniform(0, 1) <= mutation_prob:

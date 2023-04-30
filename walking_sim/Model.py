@@ -67,7 +67,7 @@ class Model:
         for body, shape in animal.getBodyAndShape():
             self.space.remove(body)
             self.space.remove(shape)
-        for contraint in animal.getContraints():
+        for contraint in animal.getConstraints():
             self.space.remove(contraint)
 
     def getPopulation(self):
@@ -132,9 +132,18 @@ class Model:
     def makeMatrix(self):
         """ Crée une matrice des paramètres utilisés pour faire marcher un animal pour les individus de premiere
         generation. Il y a 6 paramètres.
+            Les lignes de la matrice représentent:
+        H: hanche G: genou B: background F: foreground A: arriere V: avant
+        - 0: (HBA) La hanche de la jambe arrière en arrière plan
+        - 1: (GBA) Le genou de la jambe arrière en arrière plan
+        - 2: (HFA) La hanche de la jambe arrière en premier plan
+        - 3: (GFA) Le genou de la jambe arrière en premier plan
+        - 4: (HBV) La hanche de la jambe avant en arrière plan
+        - 5: (GBV) Le genou de la jambe avant en arrière plan
+        - 6: (HFV) La hanche de la jambe avant en premier plan
+        - 7: (GFV) Le genou de la jambe avant en premier plan
             Les paramètres de la matrice représentent:
-        - L'index de la partie de la jambe à bouger
-        - La vitesse moyenne de rotation du genou
+        - La vitesse de rotation du RotationJoint représentant une articulation
         - La direction de la rotation du genou  (jambe arriére axe x)
         - La direction de la rotation de la hanche (jambe arrière axe x)
         - La direction de la rotation du genou  (jambe avant axe x)
@@ -147,42 +156,30 @@ class Model:
         matrix = []
         y = self.footnumber * 2
         for i in range(y):
-            x = [random.randint(0, 7), random.uniform(-5.0, 5.0), random.randint(-1, 1), random.randint(-1, 1), random.randint(-1, 1), random.randint(-1, 1)]
+            x = [random.uniform(0, 3.0), random.randint(-1, 1), random.randint(-1, 1),
+                 random.randint(-1, 1), random.randint(-1, 1)]
             matrix.append(x)
         return matrix
 
     def moves(self, direction, animal):
         """
-            Fait bouger les parties des jambes dependant de la matrice
+            Fait bouger les parties des jambes en fonction des paramètres de la matrice
         """
         topBody = animal.getTopBodyAndHeadBody()[0]
         matrix = animal.getMatrix()
         self.smjoints = animal.getSmjoints()
-
-        direction_1 = [1, -1, -1, -1, -1, -1, -1, 1]  # 1
-        direction_2 = [-1, -1, 1, 1, 1, 1, -1, -1]  # 2
-        direction_3 = [-1, 1, 1, 1, 1, 1, 1, -1]  # -1
-        direction_4 = [1, 1, -1, -1, -1, -1, 1, 1]  # -2
+        i_direction = 0
+        if direction == 1:
+            i_direction = 0
+        if direction == -1:
+            i_direction = 1
+        directions = [[1, -1, -1, 0, -1, 0, 1, -1]  # 1
+            , [-1, 0, 1, -1, 1, -1, -1, 0]]  # -1
 
         for k in range(len(self.smjoints)):
             self.smjoints[k].rate = 0
-
-        if direction == 1:
-            for i in range(len(matrix)):
-                self.smjoints[matrix[i][0]].rate = matrix[i][1] * matrix[i][2]
-
-        elif direction == 2:
-            for i in range(len(matrix)):
-                self.smjoints[matrix[i][0]].rate = matrix[i][1] * matrix[i][3]
-
-        elif direction == -1:
-            for i in range(len(matrix)):
-                if i not in [1, 6]:
-                    self.smjoints[matrix[i][0]].rate = matrix[i][1] * matrix[i][4]
-
-        elif direction == -2:
-            for i in range(len(matrix)):
-                self.smjoints[matrix[i][0]].rate = matrix[i][1] * matrix[i][5]
+        for i in range(len(matrix)):
+            self.smjoints[i].rate = matrix[i][0] * directions[i_direction][i]
 
     def getScore(self, i):
         return self.population[i].getScore()
@@ -202,8 +199,7 @@ class Model:
     def run_simulation(self, direction):
         if self.individu == 0:
             self.individu = 10
-            self.i = 0
-            self.direction = 1
+            direction = 1
             if self.generation != 0:
                 self.makeNewPopulation()
             self.setAnimal()
@@ -214,12 +210,11 @@ class Model:
             if indexAnimal not in self.fallenAnimals:
                 time_gap = time() - self.timer
                 animal = self.population[indexAnimal]
-                self.top, self.head = animal.getTopBodyAndHeadBody()
-                isMoving = animal.isMoving(time_gap)
-                isNotFalling = animal.isNotFalling(time_gap)
+                top, head = animal.getTopBodyAndHeadBody()
+                is_moving = animal.isMoving(time_gap)
+                is_not_falling = animal.isNotFalling(time_gap)
 
-                if isMoving and isNotFalling:
-                    self.start_time = time()
+                if is_moving and is_not_falling:
                     self.moves(direction, animal)
                     # self.distance = self.top.position[0] - animal.getPosition()[0]
                     animal.updateTime()
@@ -233,7 +228,7 @@ class Model:
                         self.completeScoreGeneration(self.generation)
                         self.generation += 1
                     self.individu -= 1
-                distance = (self.top.position[0] - animal.getInitPos()[0])
+                distance = (top.position[0] - animal.getInitPos()[0])
                 individu_timer = time() - self.timer
                 if individu_timer > 0:
                     score = distance + ((1 / individu_timer) * 100)

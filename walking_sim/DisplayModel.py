@@ -32,20 +32,20 @@ class Display:
 
     def setDirection(self):
         if self.i == 2:
-            self.direction = 2
+            self.direction = 1
         if self.i  == 4:
             self.direction = -1
         if self.i  == 6:
-            self.direction = -2
+            self.direction = -1
         if self.i >= 8:
             self.i = 0
             self.direction = 1  
 
     def show(self):
         draw_options = pymunk.pygame_util.DrawOptions(self.screen)
-        contractMusclesRight = pygame.USEREVENT + 1
-        timeToMove = 500
-        pygame.time.set_timer(contractMusclesRight, timeToMove, 160000000)
+        contract_muscles_right = pygame.USEREVENT + 1
+        time_to_move = 500
+        pygame.time.set_timer(contract_muscles_right, time_to_move, 160000000)
         back_button = pygame.image.load("../resources/imgs/back_arrow.png").convert_alpha()
         back_button_active = pygame.image.load("../resources/imgs/back_arrow_active.png").convert_alpha()
         finish_line = pygame.image.load("../resources/imgs/finish_line.png").convert_alpha()
@@ -58,7 +58,7 @@ class Display:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return 
-                elif event.type == contractMusclesRight:
+                elif event.type == contract_muscles_right:
                     self.generation, self.individu = self.model.run_simulation(self.direction)
                     self.score = self.model.getBestScore()
                     self.i += 2
