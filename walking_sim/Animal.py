@@ -113,8 +113,8 @@ class Cow(Animal):
         self.FrontLeg_x = (self.x_cow + (self.w_body / 2)) - ((self.w_body * 0.1) + (self.w_leg / 2))
         self.headBody = None
         self.time = 0
-        self.diff_x = 0
         self.derive_time = 0
+        self.derive_x = 0
         self.x_previous_body = x_cow
         self.y_previous_body = y_cow
         self.x_cow = x_cow
@@ -138,7 +138,7 @@ class Cow(Animal):
 
     def updateTime(self):
         self.time += time() - self.derive_time
-        self.diff_x += self.x_previous_body - self.topBody.position[0]
+        self.derive_x += self.x_previous_body - self.topBody.position[0]
         self.x_previous_body = self.topBody.position[0]
 
     def isMoving(self, time):
@@ -149,7 +149,7 @@ class Cow(Animal):
                 self.diff_x = 0
                 self.time = 0
                 return False"""
-        if  time > 8:
+        if  time > 10:
             return False
         return True
 

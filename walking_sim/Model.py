@@ -1,3 +1,5 @@
+import time
+
 import pymunk.pygame_util
 
 from walking_sim.Animal import *
@@ -12,8 +14,8 @@ class Model:
     def __init__(self, mutation_prob, footNumber, weight, w_body, h_body):
         self.space = pymunk.Space()
         self.environment = Environment(self.space)
-        self.algo = WalterAlgo(footNumber)#Genetic(footNumber)
-        #self.differential_evolution = DifferentialEvolution([])
+        self.algo = WalterAlgo(footNumber)  # Genetic(footNumber)
+        # self.differential_evolution = DifferentialEvolution([])
         self.population = []
         self.footnumber = footNumber
         self.weight = weight
@@ -26,6 +28,9 @@ class Model:
         self.fallenAnimals = []
         self.distance_final = 0
         self.timer = 0
+        self.lastSwitchDTime = 0
+        self.direction = 1
+        self.switchDirectionTime = 0.75
         self.checkParameters()
 
     def checkParameters(self):
@@ -76,6 +81,9 @@ class Model:
 
     def setPopulation(self, new_population):
         self.population = new_population
+
+    def setDirection(self):
+        self.direction = self.direction * -1
 
     def balanced(self):
         for i in range(int(len(self.population) / 2)):
@@ -163,7 +171,6 @@ class Model:
         """
             Fait bouger les parties des jambes en fonction des paramètres de la matrice
         """
-        topBody = animal.getTopBodyAndHeadBody()[0]
         matrix = animal.getMatrix()
         self.smjoints = animal.getSmjoints()
         i_direction = 0
@@ -194,16 +201,24 @@ class Model:
         line = str(generationNumber) + " " + str(avg_score / 3) + "\n"
         file1.write(line)
 
-    def run_simulation(self, direction):
+    def run_simulation(self):
+
         if self.individu == 0:
             self.individu = 10
-            direction = 1
+            self.direction = 1
             if self.generation != 0:
                 self.makeNewPopulation()
             self.setAnimal()
             self.fallenAnimals = []
             self.reset_timer()
+            self.lastSwitchDTime = perf_counter_ns()
 
+        timepassed = (perf_counter_ns() - self.lastSwitchDTime)/(1000 * 1000 * 1000)
+        #print(timepassed)
+        if timepassed >= self.switchDirectionTime:
+            #print("CHANGE DIR: "+str(timepassed))
+            self.lastSwitchDTime = perf_counter_ns()
+            self.setDirection()
         for indexAnimal in range(len(self.population)):
             if indexAnimal not in self.fallenAnimals:
                 time_gap = time() - self.timer
@@ -213,7 +228,7 @@ class Model:
                 is_not_falling = animal.isNotFalling(time_gap)
 
                 if is_moving and is_not_falling:
-                    self.moves(direction, animal)
+                    self.moves(self.direction, animal)
                     # self.distance = self.top.position[0] - animal.getPosition()[0]
                     animal.updateTime()
 
@@ -231,7 +246,6 @@ class Model:
                 if individu_timer > 0:
                     score = distance
                     animal.setScore(score)  # TODO revoir le score
-
         return self.generation, self.individu
 
     def reset_timer(self):

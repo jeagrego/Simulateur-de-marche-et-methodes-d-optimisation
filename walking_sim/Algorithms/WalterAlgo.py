@@ -31,7 +31,8 @@ class WalterAlgo:
         print(random_factor)
         for leg_index in range(num_params):
             # leg_index = random.choice([matrice_p1[i][0], matrice_p2[i][0]])
-            average_rotation = matrix_p1[leg_index] * (1 + random.uniform(-1, 1) * random_factor)
+            average_rotation = matrix_p1[leg_index] + random.uniform(-1, 1) * random_factor
+            average_rotation = min(max(average_rotation, -5), 5)
             child.append(average_rotation)
         # child = (matrice_p1[:index] + matrice_p2[index:], score_p1)
         print(child)
@@ -46,11 +47,13 @@ class WalterAlgo:
         random_factor = random_factor / 100
         random_factor_current = random_factor
         for i in range(population_size):
-            print("random factor :"+str(random_factor_current))
+            print("random factor :" + str(random_factor_current))
             parent1 = self.get_best_parent(population)  # changed to get_random_parent
-            child = self.randomize(parent1.getMatrix(), 0)
-            random_factor_current = random_factor_current - random_factor / 10
+            child = self.randomize(parent1.getMatrix(), 0)  # random_factor_current
+
             population_2.append(child)
             if population_size == 1:
                 return population_2
+            else:
+                random_factor_current = random_factor_current - (random_factor / (population_size - 1))
         return population_2

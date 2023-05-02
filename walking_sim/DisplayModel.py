@@ -22,21 +22,14 @@ class Display:
         self.fps = 60
         self.dt = 1.0 / self.fps
         self.generation = 0
-        self.direction = 1  
-        self.distance = 0 
+        self.distance = 0
         self.individu = 0
         self.score = 0
         pygame.display.set_caption("Simulation de marche")
         self.top = pymunk.Body()
 
-    def setDirection(self):
-        self.direction = self.direction * -1
-
     def show(self):
         draw_options = pymunk.pygame_util.DrawOptions(self.screen)
-        reverse_direction_rotation = pygame.USEREVENT + 1
-        time_to_move = 1000 #ms
-        pygame.time.set_timer(reverse_direction_rotation, time_to_move, 160000000)
         back_button = pygame.image.load("../resources/imgs/back_arrow.png").convert_alpha()
         back_button_active = pygame.image.load("../resources/imgs/back_arrow_active.png").convert_alpha()
         finish_line = pygame.image.load("../resources/imgs/finish_line.png").convert_alpha()
@@ -44,25 +37,16 @@ class Display:
         sky = pygame.image.load("../resources/imgs/sky.jpg").convert_alpha()
         x = 50
         y = 50
-        owntimer = 0
+        #lastSwitchDTime = perf_counter_ns()
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    return 
-                elif event.type == reverse_direction_rotation:
-                    self.setDirection()
-                    pygame.time.set_timer(reverse_direction_rotation, 0)
-                    pygame.time.set_timer(reverse_direction_rotation, time_to_move)
-            if len(self.model.fallenAnimals) == 10:
-                self.direction = 1
-                pygame.time.set_timer(reverse_direction_rotation, 0)
-                pygame.time.set_timer(reverse_direction_rotation, time_to_move)
-            self.generation, self.individu = self.model.run_simulation(self.direction)
-            self.score = self.model.getBestScore()
+                    return
             self.screen.fill(pygame.Color("white"))
             self.screen.blit(sky, (0, 0))
             self.screen.blit(finish_line, (1700, 350))
-            #back button
+            self.screen.blit(grass, (0, 560))
+            # back button
             self.screen.blit(back_button, (x, y))
             mouse = pygame.mouse.get_pos()
             click = pygame.mouse.get_pressed()
@@ -70,16 +54,25 @@ class Display:
                 if click[0] == 1:
                     return
                 self.screen.blit(back_button_active, (x, y))
-            #end back button
-            self.space.debug_draw(draw_options)
+            # end back button
+            self.generation, self.individu = self.model.run_simulation()
+            self.score = self.model.getBestScore()
+            #self.space.debug_draw(draw_options)
             # Info and flip screen
-            self.screen.blit(self.font.render("generation :" + str(self.generation) + " individu: " + str(self.individu) + " Best Score: " + str(self.score)
-                                              , True, pygame.Color("black")), (0, 0))
-            self.screen.blit(grass, (0, 560))
+            self.screen.blit(self.font.render(
+                "generation :" + str(self.generation) + " individu: " + str(self.individu) + " Best Score: " + str(
+                    self.score)
+                , True, pygame.Color("black")), (0, 0))
+            #timepassed = (perf_counter_ns() - lastSwitchDTime) / (1000 * 1000 * 1000)
+            #print("boucle display: "+ str(timepassed))
+            #if timepassed >= 0.75:
+            #    print("boucle display change dir: " + str(timepassed))
+            #   lastSwitchDTime = perf_counter_ns()
             pygame.display.flip()
+
             self.space.step(self.dt)
             self.clock.tick(self.fps)
-           
+
     """def display_simulation(self):
         if self.individu == 0:
             self.individu = 10
