@@ -22,7 +22,6 @@ class Display:
         self.fps = 60
         self.dt = 1.0 / self.fps
         self.generation = 0
-        self.i = 0
         self.direction = 1  
         self.distance = 0 
         self.individu = 0
@@ -31,21 +30,13 @@ class Display:
         self.top = pymunk.Body()
 
     def setDirection(self):
-        if self.i == 2:
-            self.direction = 1
-        if self.i  == 4:
-            self.direction = -1
-        if self.i  == 6:
-            self.direction = -1
-        if self.i >= 8:
-            self.i = 0
-            self.direction = 1  
+        self.direction = self.direction * -1
 
     def show(self):
         draw_options = pymunk.pygame_util.DrawOptions(self.screen)
-        contract_muscles_right = pygame.USEREVENT + 1
-        time_to_move = 500
-        pygame.time.set_timer(contract_muscles_right, time_to_move, 160000000)
+        reverse_direction_rotation = pygame.USEREVENT + 1
+        time_to_move = 1000 #ms
+        pygame.time.set_timer(reverse_direction_rotation, time_to_move, 160000000)
         back_button = pygame.image.load("../resources/imgs/back_arrow.png").convert_alpha()
         back_button_active = pygame.image.load("../resources/imgs/back_arrow_active.png").convert_alpha()
         finish_line = pygame.image.load("../resources/imgs/finish_line.png").convert_alpha()
@@ -53,16 +44,21 @@ class Display:
         sky = pygame.image.load("../resources/imgs/sky.jpg").convert_alpha()
         x = 50
         y = 50
+        owntimer = 0
         while self.running:
-            self.setDirection()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return 
-                elif event.type == contract_muscles_right:
-                    self.generation, self.individu = self.model.run_simulation(self.direction)
-                    self.score = self.model.getBestScore()
-                    self.i += 2
-
+                elif event.type == reverse_direction_rotation:
+                    self.setDirection()
+                    pygame.time.set_timer(reverse_direction_rotation, 0)
+                    pygame.time.set_timer(reverse_direction_rotation, time_to_move)
+            if len(self.model.fallenAnimals) == 10:
+                self.direction = 1
+                pygame.time.set_timer(reverse_direction_rotation, 0)
+                pygame.time.set_timer(reverse_direction_rotation, time_to_move)
+            self.generation, self.individu = self.model.run_simulation(self.direction)
+            self.score = self.model.getBestScore()
             self.screen.fill(pygame.Color("white"))
             self.screen.blit(sky, (0, 0))
             self.screen.blit(finish_line, (1700, 350))

@@ -106,7 +106,7 @@ class Cow(Animal):
         super().__init__(footNumber, weight, w_body, h_body, x_cow=150, y_cow=430.75)
 
         self.leg_weight = weight * 0.05  # 8 leg members
-        self.head_weight = weight * 0.1
+        self.head_weight = weight * 0.025
         self.foot_weight = weight * 0.025  # 4 hoofs
         self.BackLeg_x = (self.x_cow - (self.w_body / 2)) + ((self.w_body * 0.1) + (self.w_leg / 2))
         self.upperLeg_y = (self.y_cow + (self.h_body / 2)) + self.h_leg / 2
@@ -114,7 +114,7 @@ class Cow(Animal):
         self.headBody = None
         self.time = 0
         self.diff_x = 0
-        self.interval_time = 0
+        self.derive_time = 0
         self.x_previous_body = x_cow
         self.y_previous_body = y_cow
         self.x_cow = x_cow
@@ -137,19 +137,19 @@ class Cow(Animal):
         self.time = time
 
     def updateTime(self):
-        self.time += time() - self.interval_time
+        self.time += time() - self.derive_time
         self.diff_x += self.x_previous_body - self.topBody.position[0]
         self.x_previous_body = self.topBody.position[0]
 
     def isMoving(self, time):
         """if self.time // 5 == 1:
             self.time = 0
-            self.interval_time = time()
+            self.derive_time = time()
             if abs(self.diff_x) < 80:
                 self.diff_x = 0
                 self.time = 0
                 return False"""
-        if self.topBody.velocity[0] < -5 and time > 4:
+        if  time > 8:
             return False
         return True
 

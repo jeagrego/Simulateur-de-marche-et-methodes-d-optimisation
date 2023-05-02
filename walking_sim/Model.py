@@ -1,9 +1,10 @@
 import pymunk.pygame_util
 
 from walking_sim.Animal import *
-from walking_sim.DifferentialEvolution import *
+from Algorithms.DifferentialEvolution import *
 from walking_sim.Environment import Environment
-from walking_sim.Genetic import *
+from Algorithms.Genetic import *
+from Algorithms.WalterAlgo import *
 
 
 class Model:
@@ -11,8 +12,8 @@ class Model:
     def __init__(self, mutation_prob, footNumber, weight, w_body, h_body):
         self.space = pymunk.Space()
         self.environment = Environment(self.space)
-        self.genetic = Genetic(footNumber)
-        self.differential_evolution = DifferentialEvolution([])
+        self.algo = WalterAlgo(footNumber)#Genetic(footNumber)
+        #self.differential_evolution = DifferentialEvolution([])
         self.population = []
         self.footnumber = footNumber
         self.weight = weight
@@ -100,15 +101,14 @@ class Model:
 
         file1 = open("../txt/best_individu.txt", "w")
         file1.write(str(score) + "\n")
-        for i in range(self.footnumber * 2):
+        for i in range(len(matrice)):
             line = ""
-            for j in range(len(matrice[i])):
-                line += str(matrice[i][j]) + " "
+            line += str(matrice[i]) + " "
             line += "\n"
             file1.write(line)
 
     def makeNewPopulation(self):
-        new_population = self.genetic.get_new_population(self.population, self.mutation_prob)
+        new_population = self.algo.get_new_population(self.population, self.mutation_prob)
         self.population = []
         for i in range(len(new_population)):
             animal = Cow(self.footnumber, self.weight,
@@ -156,9 +156,7 @@ class Model:
         matrix = []
         y = self.footnumber * 2
         for i in range(y):
-            x = [random.uniform(0, 3.0), random.randint(-1, 1), random.randint(-1, 1),
-                 random.randint(-1, 1), random.randint(-1, 1)]
-            matrix.append(x)
+            matrix.append(random.uniform(0, 3.0))
         return matrix
 
     def moves(self, direction, animal):
@@ -179,7 +177,7 @@ class Model:
         for k in range(len(self.smjoints)):
             self.smjoints[k].rate = 0
         for i in range(len(matrix)):
-            self.smjoints[i].rate = matrix[i][0] * directions[i_direction][i]
+            self.smjoints[i].rate = matrix[i] * directions[i_direction][i]
 
     def getScore(self, i):
         return self.population[i].getScore()
@@ -204,7 +202,7 @@ class Model:
                 self.makeNewPopulation()
             self.setAnimal()
             self.fallenAnimals = []
-            self.setNewTimer()
+            self.reset_timer()
 
         for indexAnimal in range(len(self.population)):
             if indexAnimal not in self.fallenAnimals:
@@ -231,10 +229,10 @@ class Model:
                 distance = (top.position[0] - animal.getInitPos()[0])
                 individu_timer = time() - self.timer
                 if individu_timer > 0:
-                    score = distance + ((1 / individu_timer) * 100)
+                    score = distance
                     animal.setScore(score)  # TODO revoir le score
 
         return self.generation, self.individu
 
-    def setNewTimer(self):
+    def reset_timer(self):
         self.timer = time()

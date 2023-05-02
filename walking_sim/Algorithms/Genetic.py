@@ -104,6 +104,7 @@ class Genetic:
     def get_new_population(self, population, mutation_prob):
         population_2 = []
         population_size = len(population)
+        mutation_prob = mutation_prob/100
         for i in range(population_size):
             parent1, parent2 = self.get_best_parents(population)  # changed to get_random_parent
             child = self.crossover(parent1.getMatrix(), parent2.getMatrix())
