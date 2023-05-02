@@ -49,7 +49,7 @@ class Slider:
 
                 # limit the size of the slider
                 if self.sliderWidth < 1:
-                    self.sliderWidth = 0
+                    self.sliderWidth = random_factor_current
                 if self.sliderWidth > self.outlineSize[0]:
                     self.sliderWidth = self.outlineSize[0]
 

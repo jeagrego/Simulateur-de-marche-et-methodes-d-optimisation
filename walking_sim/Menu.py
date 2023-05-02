@@ -1,7 +1,7 @@
 import pygame
 from Model import *
-from walking_sim.DisplayModel import *
-from walking_sim.constantes import *
+from DisplayModel import *
+from constantes import *
 from Slider import *
 
 

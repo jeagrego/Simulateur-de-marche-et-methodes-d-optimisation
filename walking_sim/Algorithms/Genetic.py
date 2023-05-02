@@ -23,23 +23,18 @@ class Genetic:
         num_params = len(matrix_p1)
         if num_params <= 1:
             return matrix_p1
-        # index = random.randrange(1, len(matrice_p1))
+        # index = random.randrange(1, len(matrice_p1))s
         child = []  # The child parameters become the parameter matrix
         print(matrix_p1, matrix_p2)
         for leg_index in range(num_params):
             params_c = []  # The child parameters used to create the matrix
             # leg_index = random.choice([matrice_p1[i][0], matrice_p2[i][0]])
-            average_rotation = (matrix_p1[leg_index][0] + matrix_p2[leg_index][0]) / 2
-            rotation_direction_1 = random.choice([matrix_p1[leg_index][1], matrix_p2[leg_index][1]])
-            rotation_direction_2 = random.choice([matrix_p1[leg_index][2], matrix_p2[leg_index][2]])
-            rotation_direction_3 = random.choice([matrix_p1[leg_index][3], matrix_p2[leg_index][3]])
-            rotation_direction_4 = random.choice([matrix_p1[leg_index][4], matrix_p2[leg_index][4]])
-            params_c.append(average_rotation)
-            params_c.append(rotation_direction_1)
-            params_c.append(rotation_direction_2)
-            params_c.append(rotation_direction_3)
-            params_c.append(rotation_direction_4)
-            child.append(params_c)
+            #average_rotation = random.choice([matrix_p1[leg_index], matrix_p2[leg_index]])
+            diff_speed_m1_m2 = matrix_p1[leg_index] - matrix_p2[leg_index]
+            average_rotation = random.uniform(-diff_speed_m1_m2, diff_speed_m1_m2) + (matrix_p1[leg_index] + matrix_p2[leg_index]) / 2
+            average_rotation = min(max(average_rotation, -5), 5)
+            #params_c.append(average_rotation)
+            child.append(average_rotation)
         # child = (matrice_p1[:index] + matrice_p2[index:], score_p1)
         print(child)
         return child
@@ -52,21 +47,18 @@ class Genetic:
         i_leg_part = random.randrange(0, len(self.leg_set) - 1)
         # i_leg_part_2 = random.randrange(0, len(self.leg_set) - 1)
 
-        individual[i_leg_part][0] = self.rotation_set[random.randint(0, len(self.rotation_set) - 1)]
+        individual[i_leg_part] = self.rotation_set[random.randint(0, len(self.rotation_set) - 1)]
         # individual[i_leg_part_2][0] = self.rotation_set[random.randint(0, len(self.rotation_set) - 1)]
 
         return individual
 
-    # def get_random_parents(self, population):
-    # index = len(population) // 2
+    def get_random_parents(self, population):
+        index = len(population) // 2
 
-    # if len(population) == 2:
-    # return population[0], population[1]
+        parent1 = population[random.randint(0, index-1)]
+        parent2 = population[-1]
 
-    # parent1 = population[random.randint(0, index)]
-    # parent2 = population[-1]
-
-    # return parent1, parent2
+        return parent1, parent2
 
     def get_not_random_parents(self, population):
         # calculer la somme totale des scores
@@ -106,13 +98,11 @@ class Genetic:
         population_size = len(population)
         mutation_prob = mutation_prob/100
         for i in range(population_size):
-            parent1, parent2 = self.get_best_parents(population)  # changed to get_random_parent
+            parent1, parent2 = self.get_random_parents(population)  # changed to get_random_parent
             child = self.crossover(parent1.getMatrix(), parent2.getMatrix())
 
             if random.uniform(0, 1) <= mutation_prob:
                 child = self.mutate(child)
-
             population_2.append(child)
-            if population_size == 1:
-                return population_2
+            
         return population_2

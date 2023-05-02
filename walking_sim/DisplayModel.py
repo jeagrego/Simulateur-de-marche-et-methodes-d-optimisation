@@ -57,7 +57,7 @@ class Display:
             # end back button
             self.generation, self.individu = self.model.run_simulation()
             self.score = self.model.getBestScore()
-            #self.space.debug_draw(draw_options)
+            self.space.debug_draw(draw_options)
             # Info and flip screen
             self.screen.blit(self.font.render(
                 "generation :" + str(self.generation) + " individu: " + str(self.individu) + " Best Score: " + str(

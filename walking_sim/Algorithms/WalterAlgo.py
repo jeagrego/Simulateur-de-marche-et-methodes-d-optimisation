@@ -49,7 +49,7 @@ class WalterAlgo:
         for i in range(population_size):
             print("random factor :" + str(random_factor_current))
             parent1 = self.get_best_parent(population)  # changed to get_random_parent
-            child = self.randomize(parent1.getMatrix(), 0)  # random_factor_current
+            child = self.randomize(parent1.getMatrix(), random_factor_current)  # random_factor_current
 
             population_2.append(child)
             if population_size == 1:

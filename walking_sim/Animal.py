@@ -30,7 +30,7 @@ class Animal:
 
         self.w_leg = w_body * 0.15
         self.h_leg = h_body * 0.55
-        self.w_hoof = w_body * 0.25
+        self.w_hoof = w_body * 0.20
         self.h_hoof = h_body * 0.10
 
     def setScore(self, score):
@@ -105,8 +105,8 @@ class Cow(Animal):
     def __init__(self, footNumber, weight, w_body, h_body, x_cow=150, y_cow=430.75):
         super().__init__(footNumber, weight, w_body, h_body, x_cow=150, y_cow=430.75)
 
-        self.leg_weight = weight * 0.05  # 8 leg members
-        self.head_weight = weight * 0.025
+        self.leg_weight = weight * 0.065  # 8 leg members
+        self.head_weight = weight * 0.010
         self.foot_weight = weight * 0.025  # 4 hoofs
         self.BackLeg_x = (self.x_cow - (self.w_body / 2)) + ((self.w_body * 0.1) + (self.w_leg / 2))
         self.upperLeg_y = (self.y_cow + (self.h_body / 2)) + self.h_leg / 2
@@ -223,6 +223,7 @@ class Cow(Animal):
             for body in leg:
                 leg_shape = pymunk.Poly.create_box(body, (self.w_leg, self.h_leg))
                 leg_shape.color = cow_color
+                leg_shape.friction = 0.1
                 self.bodiesAndShapes.append((body, leg_shape))
 
         for foot in self.footBodies:

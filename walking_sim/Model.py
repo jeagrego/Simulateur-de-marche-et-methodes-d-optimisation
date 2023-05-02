@@ -2,9 +2,9 @@ import time
 
 import pymunk.pygame_util
 
-from walking_sim.Animal import *
+from Animal import *
 from Algorithms.DifferentialEvolution import *
-from walking_sim.Environment import Environment
+from Environment import Environment
 from Algorithms.Genetic import *
 from Algorithms.WalterAlgo import *
 
@@ -14,7 +14,8 @@ class Model:
     def __init__(self, mutation_prob, footNumber, weight, w_body, h_body):
         self.space = pymunk.Space()
         self.environment = Environment(self.space)
-        self.algo = WalterAlgo(footNumber)  # Genetic(footNumber)
+        self.algo = Genetic(footNumber)
+        #WalterAlgo(footNumber)  # 
         # self.differential_evolution = DifferentialEvolution([])
         self.population = []
         self.footnumber = footNumber
@@ -164,7 +165,7 @@ class Model:
         matrix = []
         y = self.footnumber * 2
         for i in range(y):
-            matrix.append(random.uniform(0, 3.0))
+            matrix.append(random.uniform(-4.0, 4.0))
         return matrix
 
     def moves(self, direction, animal):
