@@ -11,14 +11,13 @@ from Algorithms.WalterAlgo import *
 
 class Model:
 
-    def __init__(self, mutation_prob, footNumber, weight, w_body, h_body):
+    def __init__(self, mutation_prob, footNumber, weight, w_body, h_body, type_algo):
         self.space = pymunk.Space()
         self.environment = Environment(self.space)
-        self.algo = Genetic(footNumber)
-        #WalterAlgo(footNumber)  # 
-        # self.differential_evolution = DifferentialEvolution([])
-        self.population = []
         self.footnumber = footNumber
+        self.algo = self.chooseAlgorithm(type_algo)
+        #WalterAlgo(footNumber)  #  Genetic(footNumber)
+        self.population = []
         self.weight = weight
         self.w_body = w_body
         self.h_body = h_body
@@ -251,3 +250,11 @@ class Model:
 
     def reset_timer(self):
         self.timer = time()
+
+    def chooseAlgorithm(self, algo_index):
+        if(algo_index == 1):
+            print("genetic selected")
+            return Genetic(self.footnumber)
+        if(algo_index == 2):
+            print("walter selected")
+            return WalterAlgo(self.footnumber)

@@ -18,11 +18,11 @@ class Menu:
         self.x_pos = 300 + (width * 0.35)
         self.y_pos = 100
         self.y_offset = 70
-        self.number_boxes = 5
-        self.default_val_boxes = ["0.1", "4", "100", "200", "100"]
-        self.min_max_values = [[0, 100, 20], [4, 4, 0], [100, 200, 0], [100, 300, 100], [100, 200, 0]]
+        self.number_boxes = 6
+        self.default_val_boxes = ["0.1", "4", "100", "200", "100", "1"]
+        self.min_max_values = [[0, 100, 20], [4, 4, 0], [100, 200, 0], [100, 300, 100], [100, 200, 0], [1, 2, 1]]
         self.label_boxes = ["Mutation probability(%) :", "Foot number :", "Weight(kg) :", "Width body(pixels) :",
-                            "Height Body(pixels) :"]
+                            "Height Body(pixels) :", "Algorithm :"]
         self.text = [self.default_val_boxes[i] for i in range(self.number_boxes)]
         self.input_box = [[self.label_boxes[i], pygame.Rect(self.x_pos, self.y_pos + self.y_offset * i, 240, 32)] for i
                           in range(self.number_boxes)]
@@ -81,6 +81,10 @@ class Menu:
                 sliders[i].render(self.screen, self.color[i])
                 sliders[i].changeValue()
                 values[i] = str(sliders[i].getValue())
+            if round(sliders[5].getValue()) == 1:  # Box algorithm
+                self.input_box[0][0] = "Mutation probability(%) :"
+            if round(sliders[5].getValue()) == 2:  # Box algorithm
+                self.input_box[0][0] = "Randomness Factor(%) :"
             if isDone:
                 self.drawModel(values)
             self.drawOptions()
@@ -93,7 +97,7 @@ class Menu:
                            self.clicked)
 
     def drawModel(self, values):
-        self.model = Model(float(values[0]), int(values[1]), float(values[2]), float(values[3]), float(values[4]))
+        self.model = Model(float(values[0]), int(values[1]), float(values[2]), float(values[3]), float(values[4]), round(float(values[5])))
         displaymodel = Display(self.model)
         displaymodel.show()
 
