@@ -44,8 +44,7 @@ class Display:
                     return
             self.screen.fill(pygame.Color("white"))
             self.screen.blit(sky, (0, 0))
-            self.screen.blit(finish_line, (1700, 350))
-            self.screen.blit(grass, (0, 560))
+            self.screen.blit(finish_line, (1200, 350))
             # back button
             self.screen.blit(back_button, (x, y))
             mouse = pygame.mouse.get_pos()
@@ -58,6 +57,7 @@ class Display:
             self.generation, self.individu = self.model.run_simulation()
             self.score = self.model.getBestScore()
             self.space.debug_draw(draw_options)
+            self.screen.blit(grass, (0, 560))
             # Info and flip screen
             self.screen.blit(self.font.render(
                 "generation :" + str(self.generation) + " individu: " + str(self.individu) + " Best Score: " + str(
