@@ -30,7 +30,7 @@ class Genetic:
             params_c = []  # The child parameters used to create the matrix
             # leg_index = random.choice([matrice_p1[i][0], matrice_p2[i][0]])
             #average_rotation = random.choice([matrix_p1[leg_index], matrix_p2[leg_index]])
-            diff_speed_m1_m2 = matrix_p1[leg_index] - matrix_p2[leg_index]
+            diff_speed_m1_m2 = (matrix_p1[leg_index] - matrix_p2[leg_index])/2
             average_rotation = random.uniform(-diff_speed_m1_m2, diff_speed_m1_m2) + (matrix_p1[leg_index] + matrix_p2[leg_index]) / 2
             average_rotation = min(max(average_rotation, -5), 5)
             #params_c.append(average_rotation)
@@ -77,10 +77,10 @@ class Genetic:
                 break
 
         # répéter les étapes 2 à 4 pour sélectionner le deuxième parent
-        random_num = random.uniform(0, total_score)
+        random_num = random.uniform(0, total_score-parent1.getScore())
         cum_score = 0
         parent2 = None
-        for indiv in population:
+        for indiv in population and not parent1:
             cum_score += indiv.getScore()
             if cum_score >= random_num:
                 parent2 = indiv
@@ -97,8 +97,8 @@ class Genetic:
         population_2 = []
         population_size = len(population)
         mutation_prob = mutation_prob/100
+        parent1, parent2 = self.get_random_parents(population)  # changed to get_random_parent
         for i in range(population_size):
-            parent1, parent2 = self.get_random_parents(population)  # changed to get_random_parent
             child = self.crossover(parent1.getMatrix(), parent2.getMatrix())
 
             if random.uniform(0, 1) <= mutation_prob:
