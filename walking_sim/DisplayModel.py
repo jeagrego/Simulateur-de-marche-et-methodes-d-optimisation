@@ -42,8 +42,8 @@ class Display:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
-            self.screen.fill(pygame.Color("white"))
-            self.screen.blit(sky, (0, 0))
+            self.screen.fill(pygame.Color("blue"))
+            # self.screen.blit(sky, (0, 0))
             self.screen.blit(finish_line, (1200, 350))
             # back button
             self.screen.blit(back_button, (x, y))
