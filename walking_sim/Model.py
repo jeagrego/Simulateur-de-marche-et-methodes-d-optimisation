@@ -3,10 +3,9 @@ import time
 import pymunk.pygame_util
 
 from Animal import *
-from Algorithms.DifferentialEvolution import *
 from Environment import Environment
 from Algorithms.Genetic import *
-from Algorithms.WalterAlgo import *
+from Algorithms.hillClimbing import *
 
 
 class Model:
@@ -16,7 +15,6 @@ class Model:
         self.environment = Environment(self.space)
         self.footnumber = footNumber
         self.algo = self.chooseAlgorithm(type_algo)
-        #WalterAlgo(footNumber)  #  Genetic(footNumber)
         self.population = []
         self.weight = weight
         self.w_body = w_body
@@ -63,8 +61,6 @@ class Model:
         """
             Ajoute toute la population dans l'environment
         """
-        """self.space = pymunk.Space()
-        self.environment.setSpace(self.space)"""
 
         for animal in self.population:
             self.environment.addAnimal(animal)
@@ -214,9 +210,7 @@ class Model:
             self.lastSwitchDTime = perf_counter_ns()
 
         timepassed = (perf_counter_ns() - self.lastSwitchDTime)/(1000 * 1000 * 1000)
-        #print(timepassed)
         if timepassed >= self.switchDirectionTime:
-            #print("CHANGE DIR: "+str(timepassed))
             self.lastSwitchDTime = perf_counter_ns()
             self.setDirection()
         for indexAnimal in range(len(self.population)):
@@ -229,7 +223,6 @@ class Model:
 
                 if is_moving and is_not_falling:
                     self.moves(self.direction, animal)
-                    # self.distance = self.top.position[0] - animal.getPosition()[0]
                     animal.updateTime()
 
                 else:
@@ -256,5 +249,5 @@ class Model:
             print("genetic selected")
             return Genetic(self.footnumber)
         if(algo_index == 2):
-            print("walter selected")
-            return WalterAlgo(self.footnumber)
+            print("hill climbing selected")
+            return Hill_climbing(self.footnumber)

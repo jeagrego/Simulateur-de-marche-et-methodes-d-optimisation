@@ -1,7 +1,7 @@
 import random
 
 
-class WalterAlgo:
+class Hill_climbing:
     def __init__(self, foot_number):
         self.leg_set = [i for i in range((foot_number * 2) - 1)]
         self.rotation_set = [random.uniform(-4, 4) for i in range(100)]
@@ -24,18 +24,11 @@ class WalterAlgo:
         num_params = len(matrix_p1)
         if num_params <= 1:
             return matrix_p1
-        # index = random.randrange(1, len(matrice_p1))
         child = []  # The child parameters become the parameter matrix
-        print(matrix_p1)
-        print(random.uniform(0, 1) * random_factor)
-        print(random_factor)
         for leg_index in range(num_params):
-            # leg_index = random.choice([matrice_p1[i][0], matrice_p2[i][0]]
             average_rotation = matrix_p1[leg_index] + random.uniform(-1, 1) * random_factor
             average_rotation = min(max(average_rotation, -5), 5)
             child.append(average_rotation)
-        # child = (matrice_p1[:index] + matrice_p2[index:], score_p1)
-        print(child)
         return child
 
     def get_best_parent(self, population):

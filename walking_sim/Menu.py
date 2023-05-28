@@ -107,7 +107,6 @@ class Menu:
             txt_surface2 = self.font.render(self.input_box[i][0], True, self.color[i])
             width = max(200, txt_surface.get_width() + 10)
             self.input_box[i][1].w = width
-            # self.screen.blit(txt_surface, (self.input_box[i][1].x + 5, self.input_box[i][1].y + 5))
             self.screen.blit(txt_surface2, (self.input_box[i][1].x - 250, self.input_box[i][1].y + 5))
             pygame.draw.rect(self.screen, self.color[i], self.input_box[i][1], 2)
 

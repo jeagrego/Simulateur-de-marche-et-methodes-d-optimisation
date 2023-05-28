@@ -23,9 +23,8 @@ class Genetic:
         num_params = len(matrix_p1)
         if num_params <= 1:
             return matrix_p1
-        # index = random.randrange(1, len(matrice_p1))s
         child = []  # The child parameters become the parameter matrix
-        print(matrix_p1, matrix_p2)
+        
         for leg_index in range(num_params):
             params_c = []  # The child parameters used to create the matrix
             # leg_index = random.choice([matrice_p1[i][0], matrice_p2[i][0]])
@@ -37,7 +36,6 @@ class Genetic:
             # params_c.append(average_rotation)
             child.append(average_rotation)
         # child = (matrice_p1[:index] + matrice_p2[index:], score_p1)
-        print(child)
         return child
 
     def mutate(self, individual):
@@ -46,11 +44,7 @@ class Genetic:
         """
 
         i_leg_part = random.randrange(0, len(self.leg_set) - 1)
-        # i_leg_part_2 = random.randrange(0, len(self.leg_set) - 1)
-
         individual[i_leg_part] = self.rotation_set[random.randint(0, len(self.rotation_set) - 1)]
-        # individual[i_leg_part_2][0] = self.rotation_set[random.randint(0, len(self.rotation_set) - 1)]
-
         return individual
 
     def get_random_parents(self, population):
@@ -92,7 +86,6 @@ class Genetic:
 
     def get_best_parents(self, population):
         print(population[-1].getScore(), population[-2].getScore())
-
         return population[-1], population[-2]
 
     def get_new_population(self, population, mutation_prob):

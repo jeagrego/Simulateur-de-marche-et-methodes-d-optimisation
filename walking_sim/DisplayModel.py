@@ -37,13 +37,11 @@ class Display:
         sky = pygame.image.load("../resources/imgs/sky.jpg").convert_alpha()
         x = 50
         y = 50
-        #lastSwitchDTime = perf_counter_ns()
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
             self.screen.fill(pygame.Color("blue"))
-            # self.screen.blit(sky, (0, 0))
             self.screen.blit(finish_line, (1200, 350))
             # back button
             self.screen.blit(back_button, (x, y))
@@ -63,51 +61,7 @@ class Display:
                 "generation :" + str(self.generation) + " individu: " + str(self.individu) + " Best Score: " + str(
                     self.score)
                 , True, pygame.Color("black")), (0, 0))
-            #timepassed = (perf_counter_ns() - lastSwitchDTime) / (1000 * 1000 * 1000)
-            #print("boucle display: "+ str(timepassed))
-            #if timepassed >= 0.75:
-            #    print("boucle display change dir: " + str(timepassed))
-            #   lastSwitchDTime = perf_counter_ns()
             pygame.display.flip()
 
             self.space.step(self.dt)
             self.clock.tick(self.fps)
-
-    """def display_simulation(self):
-        if self.individu == 0:
-            self.individu = 10
-            self.i = 0
-            self.direction = 1  
-            if self.generation != 0:
-                self.new_population = self.model.getNewPopulation()
-            else:
-                self.new_population = self.model.getPopulation()
-            self.model.setAnimal(self.new_population)
-            self.fallenAnimals = []
-            
-
-        for indexAnimal in range(len(self.new_population)):
-            if indexAnimal not in self.fallenAnimals:
-                animal = self.new_population[indexAnimal]
-                self.top, self.head = animal.getTopBodyAndHeadBody()
-                isMoving = animal.isMoving()
-                isNotFalling = animal.isNotFalling()
-                
-                if isMoving and isNotFalling:
-                    self.start_time = time()
-                    self.model.moves(self.direction, animal)
-                    self.distance = self.top.position[0] - animal.getPosition()[0]
-                    #animal.updateTime()
-
-                else:
-                    print(self.generation, animal)
-                    self.distance_final = self.top.position[0] - animal.getPosition()[0]
-                    animal.setScore(self.distance_final) #TODO revoir le score
-                    self.model.removeAnimal(animal)
-                    self.fallenAnimals.append(indexAnimal)
-
-                    if self.individu == 1:
-                        self.model.sortPopulation()
-                        self.model.completeScoreGeneration(self.generation)
-                        self.generation += 1
-                    self.individu -= 1"""
