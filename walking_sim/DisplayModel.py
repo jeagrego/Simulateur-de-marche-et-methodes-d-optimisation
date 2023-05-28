@@ -16,36 +16,20 @@ class Display:
         self.model = model
         self.space = model.getSpace()
         self.screen = pygame.display.set_mode((width, height))
-        self.draw_options = pymunk.pygame_util.DrawOptions(self.screen)
         self.clock = pygame.time.Clock()
         self.running = True
         self.font = pygame.font.SysFont("Arial", 16)
         self.fps = 60
         self.dt = 1.0 / self.fps
         self.generation = 0
-        self.i = 0
-        self.direction = 1  
-        self.distance = 0 
+        self.distance = 0
         self.individu = 0
         self.score = 0
         pygame.display.set_caption("Simulation de marche")
         self.top = pymunk.Body()
 
-    def setDirection(self):
-        if self.i == 2:
-            self.direction = 2
-        if self.i  == 4:
-            self.direction = -1
-        if self.i  == 6:
-            self.direction = -2
-        if self.i >= 8:
-            self.i = 0
-            self.direction = 1  
-
     def show(self):
-        contractMusclesRight = pygame.USEREVENT + 1
-        timeToMove = 500
-        pygame.time.set_timer(contractMusclesRight, timeToMove, 160000000)
+        draw_options = pymunk.pygame_util.DrawOptions(self.screen)
         back_button = pygame.image.load("../resources/imgs/back_arrow.png").convert_alpha()
         back_button_active = pygame.image.load("../resources/imgs/back_arrow_active.png").convert_alpha()
         finish_line = pygame.image.load("../resources/imgs/finish_line.png").convert_alpha()
@@ -54,19 +38,12 @@ class Display:
         x = 50
         y = 50
         while self.running:
-            self.setDirection()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    return 
-                elif event.type == contractMusclesRight:
-                    self.generation, self.individu = self.model.run_simulation(self.direction)
-                    self.score = self.model.getBestScore()
-                    self.i += 2
-
-            self.screen.fill(pygame.Color("white"))
-            self.screen.blit(sky, (0, 0))
-            self.screen.blit(finish_line, (1700, 350))
-            #back button
+                    return
+            self.screen.fill(pygame.Color("blue"))
+            self.screen.blit(finish_line, (1200, 350))
+            # back button
             self.screen.blit(back_button, (x, y))
             mouse = pygame.mouse.get_pos()
             click = pygame.mouse.get_pressed()
@@ -74,51 +51,17 @@ class Display:
                 if click[0] == 1:
                     return
                 self.screen.blit(back_button_active, (x, y))
-            #end back button
-            self.space.debug_draw(self.draw_options)
-            # Info and flip screen
-            self.screen.blit(self.font.render("generation :" + str(self.generation) + " individu: " + str(self.individu) + " Best Score: " + str(self.score)
-                                              , True, pygame.Color("black")), (0, 0))
+            # end back button
+            self.generation, self.individu = self.model.run_simulation()
+            self.score = self.model.getBestScore()
+            self.space.debug_draw(draw_options)
             self.screen.blit(grass, (0, 560))
+            # Info and flip screen
+            self.screen.blit(self.font.render(
+                "generation :" + str(self.generation) + " individu: " + str(self.individu) + " Best Score: " + str(
+                    self.score)
+                , True, pygame.Color("black")), (0, 0))
             pygame.display.flip()
+
             self.space.step(self.dt)
             self.clock.tick(self.fps)
-           
-    """def display_simulation(self):
-        if self.individu == 0:
-            self.individu = 10
-            self.i = 0
-            self.direction = 1  
-            if self.generation != 0:
-                self.new_population = self.model.getNewPopulation()
-            else:
-                self.new_population = self.model.getPopulation()
-            self.model.setAnimal(self.new_population)
-            self.fallenAnimals = []
-            
-
-        for indexAnimal in range(len(self.new_population)):
-            if indexAnimal not in self.fallenAnimals:
-                animal = self.new_population[indexAnimal]
-                self.top, self.head = animal.getTopBodyAndHeadBody()
-                isMoving = animal.isMoving()
-                isNotFalling = animal.isNotFalling()
-                
-                if isMoving and isNotFalling:
-                    self.start_time = time()
-                    self.model.moves(self.direction, animal)
-                    self.distance = self.top.position[0] - animal.getPosition()[0]
-                    #animal.updateTime()
-
-                else:
-                    print(self.generation, animal)
-                    self.distance_final = self.top.position[0] - animal.getPosition()[0]
-                    animal.setScore(self.distance_final) #TODO revoir le score
-                    self.model.removeAnimal(animal)
-                    self.fallenAnimals.append(indexAnimal)
-
-                    if self.individu == 1:
-                        self.model.sortPopulation()
-                        self.model.completeScoreGeneration(self.generation)
-                        self.generation += 1
-                    self.individu -= 1"""
